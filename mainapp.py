@@ -2,10 +2,12 @@
 from tkinter import *
 from tkinter.filedialog import askopenfile
 from tkinter import messagebox
+import pandas as pd
+from IPython.display import display
 
 
 
-#setting up the GUI window and size
+#Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired size on the screen.
 root = Tk()
 root.geometry('500x350')
 
@@ -35,8 +37,10 @@ def open_project_file():
 def students_list():
 	if studentFile is not None:
 		studentFile.seek(0)
-		content = studentFile.read()
-		messagebox.showinfo("Student File", "Feature coming soon!\nFile contents:\n" + content)
+		content = pd.read_csv(studentFile, delimiter=',')
+		#This display(content) is a pd function that displays the dataframe in the terminal.
+		# I need to inplement this so it shows in a message box.
+		display(content)
 	else:
 		messagebox.showerror("Error", "No student CSV file detected")
 
@@ -44,18 +48,21 @@ def students_list():
 def project_list():
 	if projectFile is not None:
 		projectFile.seek(0)
-		content = projectFile.read()
-		messagebox.showinfo("Student File", "Feature coming soon!\nFile contents:\n" + content)
+		content = pd.read_csv(projectFile, delimiter=',')
+		#This display(content) is a pd function that displays the dataframe in the terminal.
+		# I need to inplement this so it shows in a message box.
+		display(content)
 	else:
 		messagebox.showerror("Error", "No project CSV file detected")
 
 
 
-#all the buttons that are on the homepage
+#All the buttons that are on the homepage in the format Button(root, text, command). Root is used to connect the button to the parents window. 
+# Text is used to display text on the button. Command is used to call a function when the button is clicked.
 btn1 = Button(root, text ='Upload Student CSV', command = lambda:open_student_file())
 btn2 = Button(root, text ='Upload Project CSV', command = lambda:open_project_file()) 
-btn3 = Button(root, text ='Students List', command = students_list) 
-btn4 = Button(root, text ='Projects List', command = project_list)
+btn3 = Button(root, text ='List of Students', command = students_list) 
+btn4 = Button(root, text ='List of Projects', command = project_list)
 btn5 = Button(root, text ='Project Irregularity Test', command = project_list) 
 
 
