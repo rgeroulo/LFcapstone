@@ -1,7 +1,7 @@
 from studentDataStructure import Students
 import csv
 
-
+#this function will take in a CSV file and give out a list filled with student objects
 def parser(studentFile):
   people = []
   if studentFile is not None:
