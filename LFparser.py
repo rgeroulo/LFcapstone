@@ -1,5 +1,5 @@
 from studentDataStructure import Students
-from projectDataStructure import Projects
+from studentDataStructure import Projects
 import csv
 
 #this function will take in a CSV file and give out a list filled with student objects
