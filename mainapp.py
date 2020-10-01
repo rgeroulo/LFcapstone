@@ -5,6 +5,11 @@ from tkinter import messagebox
 import pandas as pd
 from IPython.display import display
 from csv import DictReader
+from LFparser import parser
+
+
+studentFileOpenCount = 0
+
 
 
 #Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired size on the screen.
@@ -68,13 +73,27 @@ def open_project_file():
 #file by setting offset at 0 and reading the file, if the file is missing an error will pop up
 def students_list():
 	global studentFile
+	global studentFileOpenCount
 	studentFile = askopenfile(mode ='r+', filetypes =[('CSV Files', '*.csv')])
+
 	if studentFile is not None:
+		#calls in parser to create a list of objects from CSV
+		studentlist = parser(studentFile)
+
+		#if a prevous CSV is open then the list will be deleted
+		if studentFileOpenCount != 0:
+			scrollbar.delete("1.0", tk.END)
+
+		#the scrollbar is implemented and filled with content 
 		scrollbar = Scrollbar(studentFrame)
 		scrollbar.pack(side = RIGHT, expand = TRUE, fill = BOTH)
 		lst = Listbox(studentFrame, yscrollcommand = scrollbar.set)
+		for obj in studentlist:
+			if obj.major != "Major":
+				lst.insert(END, obj.firstName + " " + obj.lastName)
 		lst.pack(side = LEFT, expand = TRUE, fill = BOTH)
 		scrollbar.config( command = lst.yview )
+		studentFileOpenCount += 1
 		studentFile.seek(0)
 		#This display(content) is a pd function that displays the dataframe in the terminal.
 		# I need to inplement this so it shows in a message box.
