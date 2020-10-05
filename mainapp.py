@@ -83,7 +83,8 @@ def students_list():
 		lst.pack(side = LEFT, expand = TRUE, fill = BOTH)
 		scrollbar.config( command = lst.yview )
 		studentFileOpenCount += 1
-		studentFile.seek(0)
+		lst.bind('<Double-1>', student_select)
+		#studentFile.seek(0)
 	else:
 		messagebox.showerror("Error", "No student CSV file detected")
 
@@ -111,15 +112,47 @@ def project_list():
 		lst.pack(side = LEFT, expand = TRUE, fill = BOTH)
 		scrollbar.config( command = lst.yview )
 		projectFileOpenCount += 1
-		projectFile.seek(0)
+		lst.bind('<Double-1>', project_select)
+		#projectFile.seek(0)
 	else:
 		messagebox.showerror("Error", "No project CSV file detected")
 
 
-def student_selection():
-	#create a new window with the student attributes and 2 buttons to swap projects with another student
-	#or move to a different project in 
-	print("hi")
+def student_select(event):
+	#Create a new window with the student attributes and 2 buttons to swap projects with another student
+	#or move to a different project. Once this is completed, create a new CSV file and return to the user
+	newWindow = Toplevel(root)
+	newWindow.title("Student")
+	newWindow.geometry("400x400")
+	Label(newWindow, text = "Student window").pack()
+
+	btn1 = Button(newWindow, text ='Swap teams with another student')
+	btn2 = Button(newWindow, text ='Move to a different team') 
+	btn1.pack(pady = 10)
+	btn2.pack(pady = 10)
+
+def project_select(event):
+	#Create a new window with the student attributes and 2 buttons to swap projects with another student
+	#or move to a different project. Once this is completed, create a new CSV file and return to the user
+	newWindow = Toplevel(root)
+	newWindow.title("Project")
+	newWindow.geometry("400x400")
+	Label(newWindow, text = "Project window").pack()
+
+	btn1 = Button(newWindow, text ='Swap teams with another student')
+	btn2 = Button(newWindow, text ='Move to a different team') 
+	btn1.pack(pady = 10)
+	btn2.pack(pady = 10)
+
+	person = lst.get(lst.curselection())
+	
+	
+
+
+def team_irregularity():
+	#Search through the team file and find teams that are too big, too small, or dont have all of the 
+	#correct majors assigned for the team by cross checking with the student file.
+	print('hi')
 
 
 
