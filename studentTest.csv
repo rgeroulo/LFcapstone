@@ -1,0 +1,6 @@
+Major,ProjectID,TimeA,TimeB,TimeC,Comments,Student_NDA,Student_IP,campus_id,last_name,first_name,OnCampus,Var14
+CMPSC,111,11,12,1,n/a,yes,yes,ID,Geroulo,Ryan,yes,var14
+CMPEN,222,12,1,2,n/a,yes,yes,ID,Dahdahee,Bez,yes,var14
+EE,333,1,2,3,n/a,yes,yes,ID,Liu,Kevin,yes,var14
+CE,444,2,3,4,n/a,no,no,ID,Mao,Mike,no,var14
+ME,555,3,4,5,n/a,no,no,ID,Cheng,Lily,no,var14
