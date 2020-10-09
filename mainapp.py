@@ -126,7 +126,7 @@ def student_select(event):
 	newWindow.geometry("400x400")
 	Label(newWindow, text = "Student window").pack()
 
-	btn1 = Button(newWindow, text ='Swap teams with another student')
+	btn1 = Button(newWindow, text ='Swap teams with another student', command = swapStudents)
 	btn2 = Button(newWindow, text ='Move to a different team') 
 	btn1.pack(pady = 10)
 	btn2.pack(pady = 10)
@@ -144,7 +144,11 @@ def project_select(event):
 	btn1.pack(pady = 10)
 	btn2.pack(pady = 10)
 
-	person = lst.get(lst.curselection())
+	#person = lst.get(lst.curselection())
+
+def swapStudents():
+	print("hi")
+
 	
 	
 
