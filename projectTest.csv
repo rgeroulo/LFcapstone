@@ -1,0 +1,6 @@
+﻿ProjectID,CompanyName,ProjectTitle,BME,CMPEN,CMPSC,DS,ED,EE,EGEE,ESC,IE,MATSE,ME,Confidentiality,IP,CourseTime,CourseName,PhysicalPrototype
+1,Boeing,Project1,1,2,3,0,0,0,0,0,0,0,0,yes,yes,11,course1,yes
+2,Lockheed,Project2,0,1,0,2,0,3,0,0,0,0,0,yes,yes,12,course2,yes
+3,Amazon,Project3,3,0,0,0,2,0,0,0,0,0,1,yes,yes,1,course3,yes
+4,Google,Project4,0,0,0,0,0,0,0,0,3,2,1,no,no,2,course4,no
+5,Facebook,Project5,0,0,3,0,0,0,2,1,0,0,0,no,no,3,course5,no
