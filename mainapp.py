@@ -83,7 +83,7 @@ def students_list():
 		lst.pack(side = LEFT, expand = TRUE, fill = BOTH)
 		scrollbar.config( command = lst.yview )
 		studentFileOpenCount += 1
-		lst.bind('<Double-1>', student_select)
+		lst.bind('<Double-1>', studentNewWindow)
 		#studentFile.seek(0)
 	else:
 		messagebox.showerror("Error", "No student CSV file detected")
@@ -112,13 +112,13 @@ def project_list():
 		lst.pack(side = LEFT, expand = TRUE, fill = BOTH)
 		scrollbar.config( command = lst.yview )
 		projectFileOpenCount += 1
-		lst.bind('<Double-1>', project_select)
+		lst.bind('<Double-1>', projectNewWindow)
 		#projectFile.seek(0)
 	else:
 		messagebox.showerror("Error", "No project CSV file detected")
 
 
-def student_select(event):
+def studentNewWindow(event):
 	#Create a new window with the student attributes and 2 buttons to swap projects with another student
 	#or move to a different project. Once this is completed, create a new CSV file and return to the user
 	newWindow = Toplevel(root)
@@ -131,7 +131,7 @@ def student_select(event):
 	btn1.pack(pady = 10)
 	btn2.pack(pady = 10)
 
-def project_select(event):
+def projectNewWindow(event):
 	#Create a new window with the student attributes and 2 buttons to swap projects with another student
 	#or move to a different project. Once this is completed, create a new CSV file and return to the user
 	newWindow = Toplevel(root)
