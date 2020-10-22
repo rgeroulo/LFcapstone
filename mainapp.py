@@ -8,10 +8,24 @@ from csv import DictReader
 from LFparser import parser
 from LFparser import projectFileParser
 
+
+def student_search(event):
+    # enter the student's name in the entry and hit enter, filter out other students' names with only relevant students
+    #   listed
+    student_filter = []
+    filter = event.widget.get().lower()
+    for obj in studentlist[1:]:
+        if filter in obj.lastName.lower() or filter in obj.firstName.lower():
+            student_filter.append(obj.firstName + ' ' + obj.lastName)
+    # listbox.insert(END, *student_filter)
+    print(student_filter)
+
+
 studentFileOpenCount = 0
 projectFileOpenCount = 0
 
-# Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired size on the screen.
+# Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired
+# size on the screen.
 root = Tk()
 root.title("The Learning Factory")
 root.geometry('850x700')
@@ -35,6 +49,7 @@ studentSearchLabel = Label(studentFrame, text="Student Name:", font=("Courier", 
 studentSearchLabel.pack(side=TOP)
 
 studentSearch = Entry(studentFrame)
+studentSearch.bind('<Return>', student_search)
 studentSearch.pack(side=TOP)
 
 #################################################  PROJECT FRAME  #################################################
@@ -51,8 +66,9 @@ projectSearch = Entry(projectFrame)
 projectSearch.pack(side=TOP)
 
 
-# student and project list buttons allow the user to go to the list of students and projects in the future. For now it checks if the proper CSV file has been uploaded and shows content of CSV
-# file by setting offset at 0 and reading the file, if the file is missing an error will pop up
+# student and project list buttons allow the user to go to the list of students and projects in the future. For now
+# it checks if the proper CSV file has been uploaded and shows content of CSV file by setting offset at 0 and reading
+# the file, if the file is missing an error will pop up
 def students_list():
     global studentFile
     global studentFileOpenCount
@@ -65,7 +81,7 @@ def students_list():
         # calls in parser to create a list of objects from CSV
         studentlist = parser(studentFile)
 
-        # if a prevous CSV is open then the list will be deleted
+        # if a previous CSV is open then the list will be deleted
         if studentFileOpenCount != 0:
             scrollbar.delete("1.0", tk.END)
 
@@ -126,8 +142,8 @@ def student_select(event):
     newWindow.geometry("400x400")
     Label(newWindow, text="Student window").pack()
 
-    studentPicked = studentlst.curselection()
-    studentPicked = studentPicked[0]
+    # studentPicked = studentlst.curselection()
+    studentPicked = studentlst.curselection()[0]
     name = Label(newWindow,
                  text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
     major = Label(newWindow, text="Major : " + studentlist[studentPicked + 1].major)
