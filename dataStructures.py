@@ -1,7 +1,7 @@
-#The student class contains all the attributes that a student would have.
-class Students:
-    def __init__(self, Major = '', ProjectID = '', TimeA = '',TimeB = '', TimeC = '', Comments = '', Student_NDA = '', Student_IP = '', 
-                campus_id = '', last_name = '', first_name = '', OnCampus = '',Var14 = ''):
+# The student class contains all the attributes that a student would have.
+class Students(object):
+    def __init__(self, Major='', ProjectID='', TimeA='', TimeB='', TimeC='', Comments='', Student_NDA='', Student_IP='',
+                 campus_id='', last_name='', first_name='', OnCampus='', Var14=''):
         self.major = Major
         self.projectID = ProjectID
         self.timeA = TimeA
@@ -17,11 +17,11 @@ class Students:
         self.var14 = Var14
 
 
-
-#The Projects class contains all the attributes that a project would have.
-class Projects:
-    def __init__(self, ProjectID = '', CompanyName = '', ProjectTitle = '',BME = '', CMPEN = '', CMPSC = '', DS = '', 
-                ED = '', EE = '', EGEE = '', ESC = '', IE = '',MATSE = '', ME = '', Confidentiality = '', IP = '', CourseTime = '', CourseName = '', PhysicalPrototype = ''):
+# The Projects class contains all the attributes that a project would have.
+class Projects(object):
+    def __init__(self, ProjectID='', CompanyName='', ProjectTitle='', BME='', CMPEN='', CMPSC='', DS='',
+                 ED='', EE='', EGEE='', ESC='', IE='', MATSE='', ME='', Confidentiality='', IP='', CourseTime='',
+                 CourseName='', PhysicalPrototype=''):
         self.projectID = ProjectID
         self.companyName = CompanyName
         self.projectTitle = ProjectTitle
@@ -41,6 +41,3 @@ class Projects:
         self.courseTime = CourseTime
         self.courseName = CourseName
         self.physicalPrototype = PhysicalPrototype
-
-
-
