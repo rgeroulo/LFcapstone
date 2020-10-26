@@ -138,6 +138,7 @@ def project_list():
 def student_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
+    global projid
     newWindow = Toplevel(root)
     newWindow.title("Student")
     newWindow.geometry("400x400")
@@ -275,6 +276,7 @@ def swap(swap_l):
     swap_l.append((stu_lst.selection_get(), studentPicked))
     studentlist[swap_l[0][1] + 1].projectID, studentlist[swap_l[1][1] + 1].projectID = \
         studentlist[swap_l[1][1] + 1].projectID, studentlist[swap_l[0][1] + 1].projectID
+    projid.config(text="Project ID : " + studentlist[swap_l[0][1] + 1].projectID)
 
 
 def swapStudents(swap_l):
@@ -373,6 +375,7 @@ def move_select(event):
 def move(move_l):
     projectPicked = proj_lst.curselection()[0]
     studentlist[move_l[0][1] + 1].projectID = projectlist[projectPicked + 1].projectID
+    projid.config(text="Project ID : " + studentlist[move_l[0][1] + 1].projectID)
 
 
 def moveStudent(move_l):
