@@ -12,9 +12,6 @@ from LFparser import projectFileParser
 studentFileOpenCount = 0
 projectFileOpenCount = 0
 
-
-
-
 #Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired size on the screen.
 root = Tk()
 root.title("The Learning Factory")
@@ -127,28 +124,41 @@ def project_list():
 def student_select(event):
 	#Create a new window with the student attributes and 2 buttons to swap projects with another student
 	#or move to a different project. Once this is completed, create a new CSV file and return to the user
-	newWindow = Toplevel(root)
+	#newWindow = Toplevel(root)
+	newWindow = Tk()
+	newWindow.geometry("900x400")
 	newWindow.title("Student")
-	newWindow.geometry("400x400")
-	Label(newWindow, text = "Student window").pack()
 
+	#topframe = Frame(newWindow)
+	#topframe.pack(side = TOP)
+	#topframeLabel = Label(topframe, text= "Student Window", font = ("Courier", 25))
+	#topframeLabel.pack()
+
+
+	leftframe = Frame(newWindow)
+	leftframe.pack( side = LEFT, expand = TRUE, fill = BOTH)
+	#leftframelabel = Label(leftframe, text= "Student Window", font = ("Courier", 25))
+	#leftframelabel.pack()
+
+	middleframe = Frame(newWindow)
+	middleframe.pack( side = LEFT, expand = TRUE, fill = BOTH)
+
+	rightframe = Frame(newWindow)
+	rightframe.pack( side = RIGHT, expand = TRUE, fill = BOTH)
 
 	studentPicked = studentlst.curselection()
 	studentPicked = studentPicked[0]
-	name = Label(newWindow, text= studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
-	major = Label(newWindow, text= "Major : " + studentlist[studentPicked + 1].major)
-	projid = Label(newWindow, text= "Project ID : " + studentlist[studentPicked + 1].projectID)
-	studentIP = Label(newWindow, text= "Student IP : " + studentlist[studentPicked + 1].studentIP)
-	onCampus = Label(newWindow, text= "On Campus? " + studentlist[studentPicked + 1].onCampus)
-	campusID = Label(newWindow, text= "Campus ID : " + studentlist[studentPicked + 1].campusID)
-	nda = Label(newWindow, text= "NDA? " + studentlist[studentPicked + 1].studentNDA)
-
-
-
-
+	name = Label(leftframe, text= studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
+	major = Label(leftframe, text= "Major : " + studentlist[studentPicked + 1].major)
+	projid = Label(leftframe, text= "Project ID : " + studentlist[studentPicked + 1].projectID)
+	studentIP = Label(leftframe, text= "Student IP : " + studentlist[studentPicked + 1].studentIP)
+	onCampus = Label(leftframe, text= "On Campus? " + studentlist[studentPicked + 1].onCampus)
+	campusID = Label(leftframe, text= "Campus ID : " + studentlist[studentPicked + 1].campusID)
+	nda = Label(leftframe, text= "NDA? " + studentlist[studentPicked + 1].studentNDA)
 	
-	btn1 = Button(newWindow, text ='Swap teams with another student', command = swapStudents)
-	btn2 = Button(newWindow, text ='Move to a different team') 
+	btn1 = Button(leftframe, text ='Swap teams with another student', command = swapStudents(event, middleframe, rightframe))
+	btn2 = Button(leftframe, text ='Move to a different team', command = moveStudent) 
+
 	name.pack(pady = 10)
 	major.pack(pady = 10)
 	projid.pack(pady = 10)
@@ -159,8 +169,46 @@ def student_select(event):
 	btn1.pack(pady = 10)
 	btn2.pack(pady = 10)
 
+def swapStudents(event, middleframe, rightframe):
+	#1) Open another listbox with students to choose from and have the ability to double click and display that students attributes.
+	if studentFile is not None:
 
+		#if a prevous CSV is open then the list will be deleted
+		#if studentFileOpenCount != 0:
+		#	scrollbar.delete("1.0", tk.END)
 
+		#the scrollbar is implemented and filled with content 
+		scrollbar = Scrollbar(middleframe)
+		scrollbar.pack(side = RIGHT, expand = TRUE, fill = BOTH)
+		studentlst = Listbox(middleframe, yscrollcommand = scrollbar.set)
+		for obj in studentlist[1:]:
+			#avoid the first row in the csv that just has titles
+			#add the student's first and last name to the listbox
+			studentlst.insert(END, obj.firstName + " " + obj.lastName)
+		studentlst.pack(side = LEFT, expand = TRUE, fill = BOTH)
+		scrollbar.config( command = studentlst.yview )
+		#studentFileOpenCount += 1
+		studentlst.bind('<Double-1>', confirmation(event, rightframe))
+		#studentFile.seek(0)
+	else:
+		messagebox.showerror("Error", "No student CSV file detected")
+	#2) Have a confirmation button that when clicked, the swap will be made that will change the two students project IDs 
+	#3) As the confirmation button is displayed, show any possible project/student disagreements by using the two project's attributes
+
+def confirmation(event, rightframe):
+	btn = Button(rightframe, text ='Confirm student swap', command = moveStudent)
+	btn.pack(pady = 10)
+	#confirm the change that the user is making and update the csv and have this pop up in a new window
+def updateCSV(event):
+	#update the CSV and destroy the window
+	print("hi")
+
+def moveStudent():
+	print("hi")
+	#1) Open a listbox that will have project names and the project IDs with the ability to double click 
+	#2) Have a confirmation button that when clicked, the student project ID will be updated to the new ID
+	#3) As the confirmation button is displayed, show any possible project/student disagreements by using the project attributes
+	
 def project_select(event):
 	#Create a new window with the student attributes and 2 buttons to swap projects with another student
 	#or move to a different project. Once this is completed, create a new CSV file and return to the user
@@ -168,7 +216,6 @@ def project_select(event):
 	newWindow.title("Project")
 	newWindow.geometry("800x800")
 	
-
 	projectPicked = projlst.curselection()
 	projectPicked = projectPicked[0]
 
@@ -192,12 +239,8 @@ def project_select(event):
 	matse = Label(newWindow, text= "MATSE : " + projectlist[projectPicked + 1].matse)
 	me = Label(newWindow, text= "ME : " + projectlist[projectPicked + 1].me)
 
-
-
-
-	
-	btn1 = Button(newWindow, text ='Swap teams with another student', command = swapStudents)
-	btn2 = Button(newWindow, text ='Move to a different team') 
+	#btn1 = Button(newWindow, text ='Swap teams with another student', command = swapStudents)
+	#btn2 = Button(newWindow, text ='Move to a different team') 
 	name.pack(pady = 10)
 	company.pack(pady = 10)
 	projid.pack(pady = 10)
@@ -220,21 +263,6 @@ def project_select(event):
 	btn1.pack(pady = 10)
 	btn2.pack(pady = 10)
 
-def swapStudents():
-	print("hi")
-	#1) Open another listbox with students to choose from and have the ability to double click and display that students attributes. 
-	#2) Have a confirmation button that when clicked, the swap will be made that will change the two students project IDs 
-	#3) As the confirmation button is displayed, show any possible project/student disagreements by using the two project's attributes
-
-def moveStudent():
-	print("hi")
-	#1) Open a listbox that will have project names and the project IDs with the ability to double click 
-	#2) Have a confirmation button that when clicked, the student project ID will be updated to the new ID
-	#3) As the confirmation button is displayed, show any possible project/student disagreements by using the project attributes
-	
-	
-
-
 def team_irregularity():
 	#Search through the team file and find teams that are too big, too small, or dont have all of the 
 	#correct majors assigned for the team by cross checking with the student file.
@@ -243,7 +271,7 @@ def team_irregularity():
 
 
 
-#All the buttons that are on the homepage in the format Button(root, text, command). Root is used to connect the button to the parents window. 
+# All the buttons that are on the homepage in the format Button(root, text, command). Root is used to connect the button to the parents window. 
 # Text is used to display text on the button. Command is used to call a function when the button is clicked.
 btn1 = Button(mainFrame, text ='Upload Student CSV', command = students_list)
 btn2 = Button(mainFrame, text ='Upload Project CSV', command = project_list) 
