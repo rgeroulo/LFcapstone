@@ -144,9 +144,11 @@ def student_select(event):
     Label(newWindow, text="Student window").pack()
 
     # studentPicked = studentlst.curselection()
+	#keeping track of the selected student from the listbox from the initial window
     studentPicked = studentlst.curselection()[0]
-    name = Label(newWindow,
-                 text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
+
+	#Display all of the attributes of the student in the new window
+    name = Label(newWindow, text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
     major = Label(newWindow, text="Major : " + studentlist[studentPicked + 1].major)
     projid = Label(newWindow, text="Project ID : " + studentlist[studentPicked + 1].projectID)
     studentIP = Label(newWindow, text="Student IP : " + studentlist[studentPicked + 1].studentIP)
@@ -155,8 +157,12 @@ def student_select(event):
     nda = Label(newWindow, text="NDA? " + studentlist[studentPicked + 1].studentNDA)
 
     change_l = [(studentlst.selection_get(), studentlst.curselection()[0])]
+
+	#create the two buttons that will be used to swap and move stduents
     btn1 = Button(newWindow, text='Swap teams with another student', command=lambda: swapStudents(change_l))
     btn2 = Button(newWindow, text='Move to a different team', command=lambda: moveStudent(change_l))
+
+	#used to format the labels and buttons on the window
     name.pack(pady=10)
     major.pack(pady=10)
     projid.pack(pady=10)
@@ -168,20 +174,6 @@ def student_select(event):
     btn2.pack(pady=10)
 
 
-def confirmation(event, rightframe):
-	btn = Button(rightframe, text ='Confirm student swap', command = moveStudent)
-	btn.pack(pady = 10)
-	#confirm the change that the user is making and update the csv and have this pop up in a new window
-def updateCSV(event):
-	#update the CSV and destroy the window
-	print("hi")
-
-def moveStudent():
-	print("hi")
-	#1) Open a listbox that will have project names and the project IDs with the ability to double click 
-	#2) Have a confirmation button that when clicked, the student project ID will be updated to the new ID
-	#3) As the confirmation button is displayed, show any possible project/student disagreements by using the project attributes
-	
 def project_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
@@ -192,6 +184,7 @@ def project_select(event):
     projectPicked = projlst.curselection()
     projectPicked = projectPicked[0]
 
+	#Display all of the attributes of the project in the new window
     name = Label(newWindow, text=projectlist[projectPicked + 1].projectTitle)
     company = Label(newWindow, text="Company : " + projectlist[projectPicked + 1].companyName)
     projid = Label(newWindow, text="Project ID : " + projectlist[projectPicked + 1].projectID)
@@ -212,8 +205,11 @@ def project_select(event):
     matse = Label(newWindow, text="MATSE : " + projectlist[projectPicked + 1].matse)
     me = Label(newWindow, text="ME : " + projectlist[projectPicked + 1].me)
 
+	#create the two buttons that will be used to do whatever, these are not implemented yet. We need to check with matt for what he wants here
     btn1 = Button(newWindow, text='Swap teams with another student', command=swapStudents)
     btn2 = Button(newWindow, text='Move to a different team')
+
+	#used to format the labels and buttons in the window
     name.pack(pady=10)
     company.pack(pady=10)
     projid.pack(pady=10)
@@ -252,6 +248,11 @@ def _destroy(event):
     pass
 
 
+
+#############################################################################################################################
+################################################# Swap student functions ####################################################
+#############################################################################################################################
+
 def swap_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
@@ -264,8 +265,9 @@ def swap_select(event):
     studentPicked = stu_lst.curselection()[0]
     if pass_name:
         studentPicked += 1
-    name = Label(newWindow,
-                 text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
+
+	#display the attributes of the selected student to swap with the other student in the new window 
+    name = Label(newWindow, text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
     major = Label(newWindow, text="Major : " + studentlist[studentPicked + 1].major)
     projid = Label(newWindow, text="Project ID : " + studentlist[studentPicked + 1].projectID)
     studentIP = Label(newWindow, text="Student IP : " + studentlist[studentPicked + 1].studentIP)
@@ -273,6 +275,7 @@ def swap_select(event):
     campusID = Label(newWindow, text="Campus ID : " + studentlist[studentPicked + 1].campusID)
     nda = Label(newWindow, text="NDA? " + studentlist[studentPicked + 1].studentNDA)
 
+	#format the labels
     name.pack(pady=10)
     major.pack(pady=10)
     projid.pack(pady=10)
@@ -283,10 +286,14 @@ def swap_select(event):
 
 
 def swap(swap_l):
+	#obtain the second student chosen to be in the swap
     studentPicked = stu_lst.curselection()[0]
+
     if pass_name:
         studentPicked += 1
+
     swap_l.append((stu_lst.selection_get(), studentPicked))
+	#swap the two project IDs of the selected students
     studentlist[swap_l[0][1] + 1].projectID, studentlist[swap_l[1][1] + 1].projectID = \
         studentlist[swap_l[1][1] + 1].projectID, studentlist[swap_l[0][1] + 1].projectID
 
@@ -294,6 +301,7 @@ def swap(swap_l):
 def swapStudents(swap_l):
     global _window_counter, studentFileOpenCount, stu_lst, pass_name
     if _window_counter == 0:
+		#open a new window that will show all possible students to swap the selected student with
         global student_change
         student_change = Toplevel(root)
         _window_counter += 1
@@ -306,15 +314,18 @@ def swapStudents(swap_l):
     student_change.title("Swapping Student")
     student_change.geometry("400x400")
 
+	#fill the list box with all the possible students to swap the selected student with
     scrollbar = Scrollbar(student_change)
     scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
     stu_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
-
+	#use this variable to know not to include the selected name in the list box
     pass_name = False
     for obj in studentlist[1:]:
         # avoid the first row in the csv that just has titles
         # add the student's first and last name to the listbox
         if obj.firstName + " " + obj.lastName == swap_l[0][0]:
+			#If the student is the one that was selected, then skip this iteration and do not place the student in the list box
+			#of possible choices
             pass_name = True
             continue
         stu_lst.insert(END, obj.firstName + " " + obj.lastName)
@@ -323,6 +334,7 @@ def swapStudents(swap_l):
     studentFileOpenCount += 1
     stu_lst.bind('<Double-1>', swap_select)
 
+	#create the button to confirm the swap
     swap_btn = Button(student_change, text='Swap with selected', command=lambda: swap(swap_l))
     swap_btn.pack(pady=10)
 
@@ -333,6 +345,10 @@ def swapStudents(swap_l):
 # 3) As the confirmation button is displayed, show possible project/student disagreements by using the two project's
 # 		attributes
 
+
+#############################################################################################################################
+################################################# Move student functions ####################################################
+#############################################################################################################################
 
 def move_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
@@ -363,6 +379,7 @@ def move_select(event):
     matse = Label(newWindow, text="MATSE : " + projectlist[projectPicked + 1].matse)
     me = Label(newWindow, text="ME : " + projectlist[projectPicked + 1].me)
 
+	#format the labels and buttons
     name.pack(pady=10)
     company.pack(pady=10)
     projid.pack(pady=10)
@@ -385,6 +402,7 @@ def move_select(event):
 
 
 def move(move_l):
+	#preform the move of a student to another team by changing the project ID for the student
     projectPicked = proj_lst.curselection()[0]
     studentlist[move_l[0][1] + 1].projectID = projectlist[projectPicked + 1].projectID
 
@@ -424,6 +442,9 @@ def moveStudent(move_l):
 # 3) As the confirmation button is displayed, show any possible project/student disagreements by using the project
 # 		attributes
 
+#############################################################################################################################
+################################################# Irregularity Testing ######################################################
+#############################################################################################################################
 
 def team_irregularity():
     # Search through the team file and find teams that are too big, too small, or don't have all of the
