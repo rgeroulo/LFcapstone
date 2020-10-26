@@ -8,22 +8,30 @@ from csv import DictReader
 from LFparser import parser
 from LFparser import projectFileParser
 
+studentFileOpenCount = 0
+projectFileOpenCount = 0
+_window_counter = 0
+filtered = False
 
 def student_search(event):
     # enter the student's name in the entry and hit enter, filter out other students' names with only relevant students
     #   listed
+    global student_filter
     student_filter = []
     filter = event.widget.get().lower()
+    cursor = 0
+    studentlst.delete(0, END)
     for obj in studentlist[1:]:
         if filter in obj.lastName.lower() or filter in obj.firstName.lower():
-            student_filter.append(obj.firstName + ' ' + obj.lastName)
+            student_filter.append((obj.firstName + ' ' + obj.lastName, cursor))
+            studentlst.insert(END, obj.firstName + ' ' + obj.lastName)
+            cursor += 1
+        else:
+            cursor += 1
+            continue
     # listbox.insert(END, *student_filter)
-    print(student_filter)
+    # print(student_filter)
 
-
-studentFileOpenCount = 0
-projectFileOpenCount = 0
-_window_counter = 0
 
 # Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired
 # size on the screen.
@@ -52,6 +60,7 @@ studentSearchLabel.pack(side=TOP)
 studentSearch = Entry(studentFrame)
 studentSearch.bind('<Return>', student_search)
 studentSearch.pack(side=TOP)
+filtered = len(studentSearch.get()) != 0
 
 #################################################  PROJECT FRAME  #################################################
 projectFrame = Frame(root)
@@ -139,13 +148,17 @@ def student_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
     global projid
+
     newWindow = Toplevel(root)
     newWindow.title("Student")
     newWindow.geometry("400x400")
     Label(newWindow, text="Student window").pack()
-
+    filtered = len(studentSearch.get()) != 0
+    if filtered:
+        studentPicked = student_filter[studentlst.curselection()[0]][1]
+    else:
     # studentPicked = studentlst.curselection()
-    studentPicked = studentlst.curselection()[0]
+        studentPicked = studentlst.curselection()[0]
     name = Label(newWindow,
                  text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
     major = Label(newWindow, text="Major : " + studentlist[studentPicked + 1].major)
@@ -249,7 +262,7 @@ def swap_select(event):
 
     # studentPicked = stu_lst.curselection()
     studentPicked = stu_lst.curselection()[0]
-    if pass_name:
+    if pass_name and passed_index <= stu_lst.curselection()[0]:
         studentPicked += 1
     name = Label(newWindow,
                  text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
@@ -280,7 +293,7 @@ def swap(swap_l):
 
 
 def swapStudents(swap_l):
-    global _window_counter, studentFileOpenCount, stu_lst, pass_name
+    global _window_counter, studentFileOpenCount, stu_lst, pass_name, passed_index
     if _window_counter == 0:
         global student_change
         student_change = Toplevel(root)
@@ -299,12 +312,15 @@ def swapStudents(swap_l):
     stu_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
 
     pass_name = False
+    index = 0
     for obj in studentlist[1:]:
         # avoid the first row in the csv that just has titles
         # add the student's first and last name to the listbox
         if obj.firstName + " " + obj.lastName == swap_l[0][0]:
             pass_name = True
+            passed_index = index
             continue
+        index += 1
         stu_lst.insert(END, obj.firstName + " " + obj.lastName)
     stu_lst.pack(side=LEFT, expand=TRUE, fill=BOTH)
     scrollbar.config(command=stu_lst.yview)
