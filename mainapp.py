@@ -23,7 +23,7 @@ def student_search(event):
 
 studentFileOpenCount = 0
 projectFileOpenCount = 0
-swap_window_counter = 0
+_window_counter = 0
 
 # Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired
 # size on the screen.
@@ -145,7 +145,6 @@ def student_select(event):
 
     # studentPicked = studentlst.curselection()
     studentPicked = studentlst.curselection()[0]
-    print(studentPicked)
     name = Label(newWindow,
                  text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
     major = Label(newWindow, text="Major : " + studentlist[studentPicked + 1].major)
@@ -155,9 +154,9 @@ def student_select(event):
     campusID = Label(newWindow, text="Campus ID : " + studentlist[studentPicked + 1].campusID)
     nda = Label(newWindow, text="NDA? " + studentlist[studentPicked + 1].studentNDA)
 
-    swap_l = [(studentlst.selection_get(), studentlst.curselection()[0])]
-    btn1 = Button(newWindow, text='Swap teams with another student', command=lambda: swapStudents(swap_l))
-    btn2 = Button(newWindow, text='Move to a different team')
+    change_l = [(studentlst.selection_get(), studentlst.curselection()[0])]
+    btn1 = Button(newWindow, text='Swap teams with another student', command=lambda: swapStudents(change_l))
+    btn2 = Button(newWindow, text='Move to a different team', command=lambda: moveStudent(change_l))
     name.pack(pady=10)
     major.pack(pady=10)
     projid.pack(pady=10)
@@ -225,10 +224,12 @@ def project_select(event):
 
 
 def _delete_window():
-    global swap_window_counter
+    global _window_counter
+    # print(_window_counter)
     try:
-        student_swap.destroy()
-        swap_window_counter -= 1
+        student_change.destroy()
+        _window_counter -= 1
+        # print(_window_counter)
     except:
         pass
 
@@ -249,7 +250,6 @@ def swap_select(event):
     studentPicked = stu_lst.curselection()[0]
     if pass_name:
         studentPicked += 1
-    print(studentPicked)
     name = Label(newWindow,
                  text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
     major = Label(newWindow, text="Major : " + studentlist[studentPicked + 1].major)
@@ -273,29 +273,28 @@ def swap(swap_l):
     if pass_name:
         studentPicked += 1
     swap_l.append((stu_lst.selection_get(), studentPicked))
-    print(swap_l)
     studentlist[swap_l[0][1] + 1].projectID, studentlist[swap_l[1][1] + 1].projectID = \
         studentlist[swap_l[1][1] + 1].projectID, studentlist[swap_l[0][1] + 1].projectID
 
 
 def swapStudents(swap_l):
-    global swap_window_counter, studentFileOpenCount, stu_lst, pass_name
-    if swap_window_counter == 0:
-        global student_swap
-        student_swap = Toplevel(root)
-        swap_window_counter += 1
+    global _window_counter, studentFileOpenCount, stu_lst, pass_name
+    if _window_counter == 0:
+        global student_change
+        student_change = Toplevel(root)
+        _window_counter += 1
     else:
-        messagebox.showerror("Error", "Due to the limitation, can only open one swapping window")
-        student_swap.lift()
+        messagebox.showerror("Error", "Due to the limitation, can only open one swapping window at a time")
+        student_change.lift()
 
-    student_swap.protocol("WM_DELETE_WINDOW", _delete_window)
-    student_swap.bind("<Destroy>", _destroy)
-    student_swap.title("Swapping Student")
-    student_swap.geometry("400x400")
+    student_change.protocol("WM_DELETE_WINDOW", _delete_window)
+    student_change.bind("<Destroy>", _destroy)
+    student_change.title("Swapping Student")
+    student_change.geometry("400x400")
 
-    scrollbar = Scrollbar(student_swap)
+    scrollbar = Scrollbar(student_change)
     scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
-    stu_lst = Listbox(student_swap, yscrollcommand=scrollbar.set)
+    stu_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
 
     pass_name = False
     for obj in studentlist[1:]:
@@ -310,7 +309,7 @@ def swapStudents(swap_l):
     studentFileOpenCount += 1
     stu_lst.bind('<Double-1>', swap_select)
 
-    swap_btn = Button(student_swap, text='Swap with selected', command=lambda: swap(swap_l))
+    swap_btn = Button(student_change, text='Swap with selected', command=lambda: swap(swap_l))
     swap_btn.pack(pady=10)
 
 
@@ -320,8 +319,90 @@ def swapStudents(swap_l):
 # 3) As the confirmation button is displayed, show possible project/student disagreements by using the two project's
 # 		attributes
 
-def moveStudent():
-    print("hi")
+
+def move_select(event):
+    # Create a new window with the student attributes and 2 buttons to swap projects with another student
+    # or move to a different project. Once this is completed, create a new CSV file and return to the user
+    newWindow = Toplevel(root)
+    newWindow.title("Project")
+    newWindow.geometry("800x800")
+
+    projectPicked = proj_lst.curselection()[0]
+
+    name = Label(newWindow, text=projectlist[projectPicked + 1].projectTitle)
+    company = Label(newWindow, text="Company : " + projectlist[projectPicked + 1].companyName)
+    projid = Label(newWindow, text="Project ID : " + projectlist[projectPicked + 1].projectID)
+    confid = Label(newWindow, text="Confidentiality? " + projectlist[projectPicked + 1].confidentiality)
+    ip = Label(newWindow, text="IP : " + projectlist[projectPicked + 1].ip)
+    courseName = Label(newWindow, text="Course Name: " + projectlist[projectPicked + 1].courseName)
+    courseTime = Label(newWindow, text="Course Time: " + projectlist[projectPicked + 1].courseTime)
+    physPrototype = Label(newWindow, text="Physical Prototype? " + projectlist[projectPicked + 1].physicalPrototype)
+    bme = Label(newWindow, text="BME : " + projectlist[projectPicked + 1].bme)
+    cmpen = Label(newWindow, text="CMPEN : " + projectlist[projectPicked + 1].cmpen)
+    cmpsc = Label(newWindow, text="CMPSC : " + projectlist[projectPicked + 1].cmpsc)
+    ds = Label(newWindow, text="DS : " + projectlist[projectPicked + 1].ds)
+    ed = Label(newWindow, text="ED : " + projectlist[projectPicked + 1].ed)
+    ee = Label(newWindow, text="EE : " + projectlist[projectPicked + 1].ee)
+    egee = Label(newWindow, text="EGEE : " + projectlist[projectPicked + 1].egee)
+    esc = Label(newWindow, text="ESC : " + projectlist[projectPicked + 1].esc)
+    ie = Label(newWindow, text="IE : " + projectlist[projectPicked + 1].ie)
+    matse = Label(newWindow, text="MATSE : " + projectlist[projectPicked + 1].matse)
+    me = Label(newWindow, text="ME : " + projectlist[projectPicked + 1].me)
+
+    name.pack(pady=10)
+    company.pack(pady=10)
+    projid.pack(pady=10)
+    confid.pack(pady=10)
+    ip.pack(pady=10)
+    courseName.pack(pady=10)
+    courseTime.pack(pady=10)
+    physPrototype.pack(pady=10)
+    bme.pack(pady=10)
+    cmpen.pack(pady=10)
+    cmpsc.pack(pady=10)
+    ds.pack(pady=10)
+    ed.pack(pady=10)
+    ee.pack(pady=10)
+    egee.pack(pady=10)
+    esc.pack(pady=10)
+    ie.pack(pady=10)
+    matse.pack(pady=10)
+    me.pack(pady=10)
+
+
+def move(move_l):
+    projectPicked = proj_lst.curselection()[0]
+    studentlist[move_l[0][1] + 1].projectID = projectlist[projectPicked + 1].projectID
+
+
+def moveStudent(move_l):
+    global _window_counter, projectFileOpenCount, proj_lst
+    if _window_counter == 0:
+        global student_change
+        student_change = Toplevel(root)
+        _window_counter += 1
+    else:
+        messagebox.showerror("Error", "Due to the limitation, can only open one moving window at a time")
+        student_change.lift()
+
+    student_change.protocol("WM_DELETE_WINDOW", _delete_window)
+    student_change.bind("<Destroy>", _destroy)
+    student_change.title("moving Student")
+
+    scrollbar = Scrollbar(student_change)
+    scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+    proj_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
+
+    for obj in projectlist[1:]:
+        # avoid the first row in the csv that just has titles
+        proj_lst.insert(END, obj.projectTitle)
+    proj_lst.pack(side=LEFT, expand=TRUE, fill=BOTH)
+    scrollbar.config(command=proj_lst.yview)
+    projectFileOpenCount += 1
+    proj_lst.bind('<Double-1>', move_select)
+
+    move_btn = Button(student_change, text='move to selected', command=lambda: move(move_l))
+    move_btn.pack(pady=10)
 
 
 # 1) Open a listbox that will have project names and the project IDs with the ability to double click
