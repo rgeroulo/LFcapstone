@@ -452,7 +452,6 @@ btn5.pack(pady=10)
 
 # the main loop that keeps the app running
 mainloop()
-=======
 # importing libraries for GUI, GUI file upload, GUI message pop up
 from tkinter import *
 from tkinter.filedialog import askopenfile
