@@ -22,9 +22,9 @@ def student_search(event):
     cursor = 0
     studentlst.delete(0, END)
     for obj in studentlist[1:]:
-        if filter in obj.lastName.lower() or filter in obj.firstName.lower():
-            student_filter.append((obj.firstName + ' ' + obj.lastName, cursor))
-            studentlst.insert(END, obj.firstName + ' ' + obj.lastName)
+        if filter in obj.lastName.lower() or filter in obj.firstName.lower() or filter in obj.major.lower() or filter in obj.projectID.lower():
+            student_filter.append((obj.firstName + ' ' + obj.lastName + ' ' + obj.major + ' ' + obj.projectID, cursor))
+            studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
             cursor += 1
         else:
             cursor += 1
@@ -33,11 +33,32 @@ def student_search(event):
     # print(student_filter)
 
 
+def project_search(event):
+    # enter the student's name in the entry and hit enter, filter out other students' names with only relevant students
+    #   listed
+    global project_filter
+    project_filter = []
+    filter = event.widget.get().lower()
+    cursor = 0
+    projlst.delete(0, END)
+    for obj in projectlist[1:]:
+        if filter in obj.projectTitle.lower() or filter in obj.projectID.lower() or filter in obj.companyName.lower():
+            project_filter.append((obj.projectTitle + ' ' + obj.projectID + ' ' + obj.companyName, cursor))
+            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Company: " + obj.companyName)
+            cursor += 1
+        else:
+            cursor += 1
+            continue
+    # listbox.insert(END, *student_filter)
+    # print(student_filter)
+
+
+
 # Setting up the GUI window and size of the initial window. The window can be dragged and altered to fit the desired
 # size on the screen.
 root = Tk()
 root.title("The Learning Factory")
-root.geometry('850x700')
+root.geometry('1000x700')
 
 #################################################  MAIN FRAME  #################################################
 mainFrame = Frame(root)
@@ -48,7 +69,7 @@ subTitle = Label(mainFrame, text="Please upload the proper CSV files to start", 
 subTitle.pack()
 
 #################################################  STUDENT FRAME  #################################################
-studentFrame = Frame(root)
+studentFrame = Frame(root, width = 450)
 studentFrame.pack(side=LEFT, expand=TRUE, fill=BOTH)
 
 studentFrameLabel = Label(studentFrame, text="Student Search", font=("Courier", 20))
@@ -63,7 +84,7 @@ studentSearch.pack(side=TOP)
 filtered = len(studentSearch.get()) != 0
 
 #################################################  PROJECT FRAME  #################################################
-projectFrame = Frame(root)
+projectFrame = Frame(root, width = 450)
 projectFrame.pack(side=RIGHT, expand=TRUE, fill=BOTH)
 
 projectFrameLabel = Label(projectFrame, text="Project Search", font=("Courier", 20))
@@ -73,8 +94,9 @@ projectSearchLabel = Label(projectFrame, text="Project name:", font=("Courier", 
 projectSearchLabel.pack(side=TOP)
 
 projectSearch = Entry(projectFrame)
+projectSearch.bind('<Return>', project_search)
 projectSearch.pack(side=TOP)
-
+filtered = len(studentSearch.get()) != 0
 
 # student and project list buttons allow the user to go to the list of students and projects in the future. For now
 # it checks if the proper CSV file has been uploaded and shows content of CSV file by setting offset at 0 and reading
@@ -102,7 +124,7 @@ def students_list():
         for obj in studentlist[1:]:
             # avoid the first row in the csv that just has titles
             # add the student's first and last name to the listbox
-            studentlst.insert(END, obj.firstName + " " + obj.lastName)
+            studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
         studentlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=studentlst.yview)
         studentFileOpenCount += 1
@@ -134,7 +156,7 @@ def project_list():
         projlst = Listbox(projectFrame, yscrollcommand=scrollbar.set)
         for obj in projectlist[1:]:
             # avoid the first row in the csv that just has titles
-            projlst.insert(END, obj.projectTitle)
+            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Company: " + obj.companyName)
         projlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=projlst.yview)
         projectFileOpenCount += 1
