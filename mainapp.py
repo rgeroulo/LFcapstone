@@ -312,6 +312,11 @@ def swap(swap_l):
     studentlist[swap_l[0][1] + 1].projectID, studentlist[swap_l[1][1] + 1].projectID = \
         studentlist[swap_l[1][1] + 1].projectID, studentlist[swap_l[0][1] + 1].projectID
     projid.config(text="Project ID : " + studentlist[swap_l[0][1] + 1].projectID)
+    studentlst.delete(0, END)
+    for obj in studentlist[1:]:
+        studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
+    _delete_window()
+
 
 
 def swapStudents(swap_l):
@@ -414,6 +419,10 @@ def move(move_l):
     projectPicked = proj_lst.curselection()[0]
     studentlist[move_l[0][1] + 1].projectID = projectlist[projectPicked + 1].projectID
     projid.config(text="Project ID : " + studentlist[move_l[0][1] + 1].projectID)
+    studentlst.delete(0, END)
+    for obj in studentlist[1:]:
+        studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
+    _delete_window()
 
 
 def moveStudent(move_l):
