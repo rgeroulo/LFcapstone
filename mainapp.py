@@ -22,9 +22,9 @@ def student_search(event):
     cursor = 0
     studentlst.delete(0, END)
     for obj in studentlist[1:]:
-        if filter in obj.lastName.lower() or filter in obj.firstName.lower():
+        if filter in obj.lastName.lower() or filter in obj.firstName.lower() or filter in obj.major.lower() or filter in obj.projectID.lower():
             student_filter.append((obj.firstName + ' ' + obj.lastName, cursor))
-            studentlst.insert(END, obj.firstName + ' ' + obj.lastName)
+            studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
             cursor += 1
         else:
             cursor += 1
@@ -37,7 +37,7 @@ def student_search(event):
 # size on the screen.
 root = Tk()
 root.title("The Learning Factory")
-root.geometry('850x700')
+root.geometry('1000x700')
 
 #################################################  MAIN FRAME  #################################################
 mainFrame = Frame(root)
@@ -48,7 +48,7 @@ subTitle = Label(mainFrame, text="Please upload the proper CSV files to start", 
 subTitle.pack()
 
 #################################################  STUDENT FRAME  #################################################
-studentFrame = Frame(root)
+studentFrame = Frame(root, width = 450)
 studentFrame.pack(side=LEFT, expand=TRUE, fill=BOTH)
 
 studentFrameLabel = Label(studentFrame, text="Student Search", font=("Courier", 20))
@@ -63,7 +63,7 @@ studentSearch.pack(side=TOP)
 filtered = len(studentSearch.get()) != 0
 
 #################################################  PROJECT FRAME  #################################################
-projectFrame = Frame(root)
+projectFrame = Frame(root, width = 450)
 projectFrame.pack(side=RIGHT, expand=TRUE, fill=BOTH)
 
 projectFrameLabel = Label(projectFrame, text="Project Search", font=("Courier", 20))
@@ -102,7 +102,7 @@ def students_list():
         for obj in studentlist[1:]:
             # avoid the first row in the csv that just has titles
             # add the student's first and last name to the listbox
-            studentlst.insert(END, obj.firstName + " " + obj.lastName)
+            studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
         studentlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=studentlst.yview)
         studentFileOpenCount += 1
@@ -134,7 +134,7 @@ def project_list():
         projlst = Listbox(projectFrame, yscrollcommand=scrollbar.set)
         for obj in projectlist[1:]:
             # avoid the first row in the csv that just has titles
-            projlst.insert(END, obj.projectTitle)
+            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Project Company: " + obj.companyName)
         projlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=projlst.yview)
         projectFileOpenCount += 1
@@ -251,9 +251,6 @@ def _delete_window():
 def _destroy(event):
     pass
 
-#############################################################################################################################
-################################################# Swap student functions ####################################################
-#############################################################################################################################
 
 def swap_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
@@ -340,9 +337,6 @@ def swapStudents(swap_l):
 # 3) As the confirmation button is displayed, show possible project/student disagreements by using the two project's
 # 		attributes
 
-#############################################################################################################################
-################################################# Move student functions ####################################################
-#############################################################################################################################
 
 def move_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
@@ -435,9 +429,6 @@ def moveStudent(move_l):
 # 3) As the confirmation button is displayed, show any possible project/student disagreements by using the project
 # 		attributes
 
-#############################################################################################################################
-################################################# Irregularity Testing ######################################################
-#############################################################################################################################
 
 def team_irregularity():
     # Search through the team file and find teams that are too big, too small, or don't have all of the
