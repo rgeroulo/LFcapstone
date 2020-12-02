@@ -5,6 +5,7 @@ from tkinter import messagebox
 import pandas as pd
 from IPython.display import display
 from csv import DictReader
+from IPython.terminal.pt_inputhooks import tk
 from LFparser import parser
 from LFparser import projectFileParser
 
@@ -13,18 +14,49 @@ projectFileOpenCount = 0
 _window_counter = 0
 filtered = False
 
+
 def student_search(event):
+    try:
+        studentlst
+    except NameError:
+        messagebox.showerror("Error", "No student CSV file detected")
     # enter the student's name in the entry and hit enter, filter out other students' names with only relevant students
     #   listed
+
     global student_filter
     student_filter = []
     filter = event.widget.get().lower()
     cursor = 0
     studentlst.delete(0, END)
     for obj in studentlist[1:]:
-        if filter in obj.lastName.lower() or filter in obj.firstName.lower():
-            student_filter.append((obj.firstName + ' ' + obj.lastName, cursor))
-            studentlst.insert(END, obj.firstName + ' ' + obj.lastName)
+        if filter in obj.lastName.lower() or filter in obj.firstName.lower() or filter in obj.major.lower() or filter in obj.projectID.lower():
+            student_filter.append((obj.firstName + ' ' + obj.lastName + ' ' + obj.major + ' ' + obj.projectID, cursor))
+            studentlst.insert(END,
+                              obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
+            cursor += 1
+        else:
+            cursor += 1
+            continue
+    # listbox.insert(END, *student_filter)
+    # print(student_filter)
+
+
+def project_search(event):
+    try:
+        projlst
+    except NameError:
+        messagebox.showerror("Error", "No project CSV file detected")
+    # enter the student's name in the entry and hit enter, filter out other students' names with only relevant students
+    #   listed
+    global project_filter
+    project_filter = []
+    filter = event.widget.get().lower()
+    cursor = 0
+    projlst.delete(0, END)
+    for obj in projectlist[1:]:
+        if filter in obj.projectTitle.lower() or filter in obj.projectID.lower() or filter in obj.companyName.lower():
+            project_filter.append((obj.projectTitle + ' ' + obj.projectID + ' ' + obj.companyName, cursor))
+            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Company: " + obj.companyName)
             cursor += 1
         else:
             cursor += 1
@@ -37,7 +69,7 @@ def student_search(event):
 # size on the screen.
 root = Tk()
 root.title("The Learning Factory")
-root.geometry('850x700')
+root.geometry('1000x700')
 
 #################################################  MAIN FRAME  #################################################
 mainFrame = Frame(root)
@@ -48,8 +80,8 @@ subTitle = Label(mainFrame, text="Please upload the proper CSV files to start", 
 subTitle.pack()
 
 #################################################  STUDENT FRAME  #################################################
-studentFrame = Frame(root)
-studentFrame.pack(side=LEFT, expand=TRUE, fill=BOTH)
+studentFrame = Frame(root, width=450)
+studentFrame.pack(side=LEFT, expand=TRUE, fill=BOTH, padx=40,pady=10)
 
 studentFrameLabel = Label(studentFrame, text="Student Search", font=("Courier", 20))
 studentFrameLabel.pack(side=TOP)
@@ -59,12 +91,12 @@ studentSearchLabel.pack(side=TOP)
 
 studentSearch = Entry(studentFrame)
 studentSearch.bind('<Return>', student_search)
-studentSearch.pack(side=TOP)
+studentSearch.pack(side=TOP,pady=10)
 filtered = len(studentSearch.get()) != 0
 
 #################################################  PROJECT FRAME  #################################################
-projectFrame = Frame(root)
-projectFrame.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+projectFrame = Frame(root, width=450)
+projectFrame.pack(side=RIGHT, expand=TRUE, fill=BOTH , padx=40,pady=10)
 
 projectFrameLabel = Label(projectFrame, text="Project Search", font=("Courier", 20))
 projectFrameLabel.pack(side=TOP)
@@ -73,7 +105,9 @@ projectSearchLabel = Label(projectFrame, text="Project name:", font=("Courier", 
 projectSearchLabel.pack(side=TOP)
 
 projectSearch = Entry(projectFrame)
-projectSearch.pack(side=TOP)
+projectSearch.bind('<Return>', project_search)
+projectSearch.pack(side=TOP,pady=10)
+filtered = len(studentSearch.get()) != 0
 
 
 # student and project list buttons allow the user to go to the list of students and projects in the future. For now
@@ -93,16 +127,17 @@ def students_list():
 
         # if a previous CSV is open then the list will be deleted
         if studentFileOpenCount != 0:
-            scrollbar.delete("1.0", tk.END)
+            Scrollbar.delete("1.0", tk.END)
 
         # the scrollbar is implemented and filled with content
         scrollbar = Scrollbar(studentFrame)
-        scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+        scrollbar.pack(side=RIGHT, expand=TRUE, fill=Y)
         studentlst = Listbox(studentFrame, yscrollcommand=scrollbar.set)
         for obj in studentlist[1:]:
             # avoid the first row in the csv that just has titles
             # add the student's first and last name to the listbox
-            studentlst.insert(END, obj.firstName + " " + obj.lastName)
+            studentlst.insert(END,
+                              obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
         studentlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=studentlst.yview)
         studentFileOpenCount += 1
@@ -126,15 +161,15 @@ def project_list():
 
         # if a prevous CSV is open then the list will be deleted
         if projectFileOpenCount != 0:
-            scrollbar.delete("1.0", tk.END)
+            Scrollbar.delete("1.0", tk.END)
 
         # the scrollbar is implemented and filled with content
         scrollbar = Scrollbar(projectFrame)
-        scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+        scrollbar.pack(side=RIGHT, expand=TRUE, fill=Y)
         projlst = Listbox(projectFrame, yscrollcommand=scrollbar.set)
         for obj in projectlist[1:]:
             # avoid the first row in the csv that just has titles
-            projlst.insert(END, obj.projectTitle)
+            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Company: " + obj.companyName)
         projlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=projlst.yview)
         projectFileOpenCount += 1
@@ -151,13 +186,13 @@ def student_select(event):
 
     newWindow = Toplevel(root)
     newWindow.title("Student")
-    newWindow.geometry("400x400")
+    newWindow.geometry("400x500")
     Label(newWindow, text="Student window").pack()
     filtered = len(studentSearch.get()) != 0
     if filtered:
         studentPicked = student_filter[studentlst.curselection()[0]][1]
     else:
-    # studentPicked = studentlst.curselection()
+        # studentPicked = studentlst.curselection()
         studentPicked = studentlst.curselection()[0]
     name = Label(newWindow,
                  text=studentlist[studentPicked + 1].firstName + " " + studentlist[studentPicked + 1].lastName)
@@ -187,7 +222,7 @@ def project_select(event):
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
     newWindow = Toplevel(root)
     newWindow.title("Project")
-    newWindow.geometry("800x800")
+    newWindow.geometry("600x800")
 
     projectPicked = projlst.curselection()
     projectPicked = projectPicked[0]
