@@ -81,7 +81,7 @@ subTitle.pack()
 
 #################################################  STUDENT FRAME  #################################################
 studentFrame = Frame(root, width=450)
-studentFrame.pack(side=LEFT, expand=TRUE, fill=BOTH, padx=40,pady=10)
+studentFrame.pack(side=LEFT, expand=TRUE, fill=BOTH, padx=40, pady=10)
 
 studentFrameLabel = Label(studentFrame, text="Student Search", font=("Courier", 20))
 studentFrameLabel.pack(side=TOP)
@@ -91,12 +91,12 @@ studentSearchLabel.pack(side=TOP)
 
 studentSearch = Entry(studentFrame)
 studentSearch.bind('<Return>', student_search)
-studentSearch.pack(side=TOP,pady=10)
+studentSearch.pack(side=TOP, pady=10)
 filtered = len(studentSearch.get()) != 0
 
 #################################################  PROJECT FRAME  #################################################
 projectFrame = Frame(root, width=450)
-projectFrame.pack(side=RIGHT, expand=TRUE, fill=BOTH , padx=40,pady=10)
+projectFrame.pack(side=RIGHT, expand=TRUE, fill=BOTH, padx=40, pady=10)
 
 projectFrameLabel = Label(projectFrame, text="Project Search", font=("Courier", 20))
 projectFrameLabel.pack(side=TOP)
@@ -106,7 +106,7 @@ projectSearchLabel.pack(side=TOP)
 
 projectSearch = Entry(projectFrame)
 projectSearch.bind('<Return>', project_search)
-projectSearch.pack(side=TOP,pady=10)
+projectSearch.pack(side=TOP, pady=10)
 filtered = len(studentSearch.get()) != 0
 
 
@@ -159,7 +159,7 @@ def project_list():
         # calls in parser to create a list of objects from CSV
         projectlist = projectFileParser(projectFile)
 
-        # if a prevous CSV is open then the list will be deleted
+        # if a previous CSV is open then the list will be deleted
         if projectFileOpenCount != 0:
             Scrollbar.delete("1.0", tk.END)
 
@@ -464,11 +464,51 @@ def moveStudent(move_l):
 # 3) As the confirmation button is displayed, show any possible project/student disagreements by using the project
 # 		attributes
 
+def major_test():
+    requ = {}
+    for p_obj in projlst:
+        temp = []
+        if p_obj.bme != 0:
+            temp.append("bme")
+        if p_obj.cmpen != 0:
+            temp.append("cmpen")
+        if p_obj.cmpsc != 0:
+            temp.append("cmpsc")
+        if p_obj.ds != 0:
+            temp.append("ds")
+        if p_obj.ed != 0:
+            temp.append("ed")
+        if p_obj.ee != 0:
+            temp.append("ee")
+        if p_obj.egee != 0:
+            temp.append("egee")
+        if p_obj.esc != 0:
+            temp.append("esc")
+        if p_obj.ie != 0:
+            temp.append("ie")
+        if p_obj.matse != 0:
+            temp.append("matse")
+        if p_obj.me != 0:
+            temp.append("me")
+        requ[p_obj.prijectID] = tuple(temp)
+
+
 
 def team_irregularity():
     # Search through the team file and find teams that are too big, too small, or don't have all of the
     # correct majors assigned for the team by cross checking with the student file.
-    print('hi')
+    try:
+        projlst
+        studentlst
+    except NameError:
+        messagebox.showerror("Error", "Please update CSV file first")
+        return
+    newWindow = Toplevel(root)
+    newWindow.title("Irregularity test")
+    newWindow.geometry("400x500")
+    Label(newWindow, text="Irregularity test result:").pack()
+
+
 
 
 # All the buttons that are on the homepage in the format Button(root, text, command). Root is used to connect the
@@ -476,7 +516,7 @@ def team_irregularity():
 # the button is clicked.
 btn1 = Button(mainFrame, text='Upload Student CSV', command=students_list)
 btn2 = Button(mainFrame, text='Upload Project CSV', command=project_list)
-btn4 = Button(mainFrame, text='Project Irregularity Test', command=project_list)
+btn4 = Button(mainFrame, text='Project Irregularity Test', command=team_irregularity)
 btn5 = Button(mainFrame, text='Generate PDF', command=project_list)
 
 btn1.pack(pady=10)
