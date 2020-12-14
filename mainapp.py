@@ -28,10 +28,11 @@ def student_search(event):
     cursor = 0
     #This line deletes the line in the csv that has the labels
     studentlst.delete(0, END)
+    #studentlst.insert(END, "First Name Last Name , Major , Project ID"))
     for obj in studentlist[1:]:
         if filter in obj.lastName.lower() or filter in obj.firstName.lower() or filter in obj.major.lower() or filter in obj.projectID.lower():
             student_filter.append((obj.firstName + ' ' + obj.lastName + ' ' + obj.major + ' ' + obj.projectID, cursor))
-            studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
+            studentlst.insert(END, obj.firstName + " " + obj.lastName + " , " + obj.major + " , " + obj.projectID)
             cursor += 1
         else:
             cursor += 1
@@ -48,10 +49,11 @@ def project_search(event):
     filter = event.widget.get().lower()
     cursor = 0
     projlst.delete(0, END)
+    #projlst.insert(END, "Project Title, Project ID , Company")
     for obj in projectlist[1:]:
         if filter in obj.projectTitle.lower() or filter in obj.projectID.lower() or filter in obj.companyName.lower():
             project_filter.append((obj.projectTitle + ' ' + obj.projectID + ' ' + obj.companyName, cursor))
-            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Company: " + obj.companyName)
+            projlst.insert(END, obj.projectTitle + " , " + obj.projectID + " , " + obj.companyName)
             cursor += 1
         else:
             cursor += 1
@@ -103,9 +105,10 @@ projectSearch.bind('<Return>', project_search)
 projectSearch.pack(side=TOP)
 filtered = len(studentSearch.get()) != 0
 
-# student and project list buttons allow the user to go to the list of students and projects in the future. For now
-# it checks if the proper CSV file has been uploaded and shows content of CSV file by setting offset at 0 and reading
-# the file, if the file is missing an error will pop up
+
+#students_list will be used to display the students in a listbox in the bottom left corner
+#after the student CSV file is uploaded using the button in the middle of the GUI. This will
+#generate a search bar and a scroll bar as well.
 def students_list():
     global studentFile
     global studentFileOpenCount
@@ -124,12 +127,13 @@ def students_list():
 
         # the scrollbar is implemented and filled with content
         scrollbar = Scrollbar(studentFrame)
-        scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+        scrollbar.pack(side=RIGHT, expand=TRUE, fill = Y)
         studentlst = Listbox(studentFrame, yscrollcommand=scrollbar.set)
+        #studentlst.insert(END, "First Name Last Name , Major , Project ID")
         for obj in studentlist[1:]:
             # avoid the first row in the csv that just has titles
             # add the student's first and last name to the listbox
-            studentlst.insert(END, obj.firstName + " " + obj.lastName + ", Major: " + obj.major + ", Project ID: " + obj.projectID)
+            studentlst.insert(END, obj.firstName + " " + obj.lastName + " , " + obj.major + " , " + obj.projectID)
         studentlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=studentlst.yview)
         studentFileOpenCount += 1
@@ -138,7 +142,9 @@ def students_list():
     else:
         messagebox.showerror("Error", "No student CSV file detected")
 
-
+#project_list will be used to display the projects in a listbox in the bottom right corner
+#after the project CSV file is uploaded using the button in the middle of the GUI. This function is
+#extremely similar to the student_list fucntion above. This will generate a search bar and a scroll bar as well.
 def project_list():
     global projectFile
     global projectFileOpenCount
@@ -157,11 +163,14 @@ def project_list():
 
         # the scrollbar is implemented and filled with content
         scrollbar = Scrollbar(projectFrame)
-        scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+        scrollbar.pack(side=RIGHT, expand=TRUE, fill=Y)
         projlst = Listbox(projectFrame, yscrollcommand=scrollbar.set)
+        #The following line will add the titles for each column. If you ever change the
+        #attributes being changed, make sure to change these titles as well.
+        #projlst.insert(END, "Project Title, Project ID , Company")
         for obj in projectlist[1:]:
             # avoid the first row in the csv that just has titles
-            projlst.insert(END, obj.projectTitle + ", Project ID: " + obj.projectID + ", Company: " + obj.companyName)
+            projlst.insert(END, obj.projectTitle + " , " + obj.projectID + " , " + obj.companyName)
         projlst.pack(side=LEFT, expand=TRUE, fill=BOTH)
         scrollbar.config(command=projlst.yview)
         projectFileOpenCount += 1
@@ -172,6 +181,8 @@ def project_list():
 
 
 #This is the window that comes up after you double click on a student
+#The searching for students will support parital names,
+#just first name, just last name, major, 
 def student_select(event):
     global projid
 
@@ -216,6 +227,7 @@ def project_select(event):
 
     projectPicked = projlst.curselection()
     projectPicked = projectPicked[0]
+    #Check to see what majors are required for the chosen project, they will be stored in "needed"
     needed = []
     if projectlist[projectPicked + 1].bme != "0":
         needed.append("bme")
@@ -240,6 +252,7 @@ def project_select(event):
     if projectlist[projectPicked + 1].me != "0":
         needed.append("me")
 
+    #Display the information that is relevant to the selected project.
     name = Label(newWindow, text=projectlist[projectPicked + 1].projectTitle)
     company = Label(newWindow, text="Company : " + projectlist[projectPicked + 1].companyName)
     projid = Label(newWindow, text="Project ID : " + projectlist[projectPicked + 1].projectID)
@@ -248,23 +261,12 @@ def project_select(event):
     courseName = Label(newWindow, text="Course Name: " + projectlist[projectPicked + 1].courseName)
     courseTime = Label(newWindow, text="Course Time: " + projectlist[projectPicked + 1].courseTime)
     physPrototype = Label(newWindow, text="Physical Prototype? " + projectlist[projectPicked + 1].physicalPrototype)
-    """
-    bme = Label(newWindow, text="BME : " + projectlist[projectPicked + 1].bme)
-    cmpen = Label(newWindow, text="CMPEN : " + projectlist[projectPicked + 1].cmpen)
-    cmpsc = Label(newWindow, text="CMPSC : " + projectlist[projectPicked + 1].cmpsc)
-    ds = Label(newWindow, text="DS : " + projectlist[projectPicked + 1].ds)
-    ed = Label(newWindow, text="ED : " + projectlist[projectPicked + 1].ed)
-    ee = Label(newWindow, text="EE : " + projectlist[projectPicked + 1].ee)
-    egee = Label(newWindow, text="EGEE : " + projectlist[projectPicked + 1].egee)
-    esc = Label(newWindow, text="ESC : " + projectlist[projectPicked + 1].esc)
-    ie = Label(newWindow, text="IE : " + projectlist[projectPicked + 1].ie)
-    matse = Label(newWindow, text="MATSE : " + projectlist[projectPicked + 1].matse)
-    me = Label(newWindow, text="ME : " + projectlist[projectPicked + 1].me)
-    """
     usedMajors = Label(newWindow, text="Majors Desired : " + str(needed))
+
 
     btn1 = Button(newWindow, text='Swap teams with another student', command=swapStudents)
     btn2 = Button(newWindow, text='Move to a different team')
+
     name.pack(pady=10)
     company.pack(pady=10)
     projid.pack(pady=10)
@@ -273,19 +275,6 @@ def project_select(event):
     courseName.pack(pady=10)
     courseTime.pack(pady=10)
     physPrototype.pack(pady=10)
-    '''
-    bme.pack(pady=10)
-    cmpen.pack(pady=10)
-    cmpsc.pack(pady=10)
-    ds.pack(pady=10)
-    ed.pack(pady=10)
-    ee.pack(pady=10)
-    egee.pack(pady=10)
-    esc.pack(pady=10)
-    ie.pack(pady=10)
-    matse.pack(pady=10)
-    me.pack(pady=10)
-    '''
     usedMajors.pack(pady=10)
     btn1.pack(pady=10)
     btn2.pack(pady=10)
@@ -308,7 +297,7 @@ def _destroy(event):
 
 def swap_select(event):
     # Create a new window with the student attributes and 2 buttons to swap projects with another student
-    # or move to a different project. Once this is completed, create a new CSV file and return to the user
+    # or move to a different project.
     newWindow = Toplevel(root)
     newWindow.title("Student")
     newWindow.geometry("400x400")
@@ -458,17 +447,21 @@ def moveStudent(move_l):
         messagebox.showerror("Error", "Due to the limitation, can only open one moving window at a time")
         student_change.lift()
 
+    student_change.geometry("400x400")
     student_change.protocol("WM_DELETE_WINDOW", _delete_window)
     student_change.bind("<Destroy>", _destroy)
-    student_change.title("moving Student")
+    student_change.title("Moving Student")
 
     scrollbar = Scrollbar(student_change)
     scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
     proj_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
 
+    #Following line is the title for the listbox. If you change any attributes that are to be displayed.
+    #Make sure to change the title to the corresponding attributes that you want.
+    #proj_lst.insert(END, "Project Title, Company, Project ID")
     for obj in projectlist[1:]:
         # avoid the first row in the csv that just has titles
-        proj_lst.insert(END, obj.projectTitle)
+        proj_lst.insert(END, obj.projectTitle + " , " + obj.companyName + " , " + obj.projectID)
     proj_lst.pack(side=LEFT, expand=TRUE, fill=BOTH)
     scrollbar.config(command=proj_lst.yview)
     projectFileOpenCount += 1
@@ -477,13 +470,11 @@ def moveStudent(move_l):
     move_btn = Button(student_change, text='move to selected', command=lambda: move(move_l))
     move_btn.pack(pady=10)
 
-
-# 1) Open a listbox that will have project names and the project IDs with the ability to double click
-# 2) Have a confirmation button that when clicked, the student project ID will be updated to the new ID
-# 3) As the confirmation button is displayed, show any possible project/student disagreements by using the project
-# 		attributes
-
-
+#########################################################################################################
+################################## Team Irregularity Checking ###########################################
+#########################################################################################################
+#The following function will be used to find all team sizes, the max/min sized team, and teams that
+#do not utilize all of the desired majors for the project assigned.
 def team_irregularity():
     # Search through the team file and find teams that are too big, too small, or don't have all of the
     # correct majors assigned for the team by cross checking with the student file.
@@ -585,6 +576,13 @@ def team_irregularity():
     else:
         messagebox.showerror("Error", "Missing student or project CSV file")
 
+#########################################################################################################
+####################################### CSV Output ######################################################
+#########################################################################################################
+#The following two functions are used to revert our data structure back to a CSV file.
+#When the buttons for student or project output are clicked, it will open your directory and
+#you can then save the file as whatwhever you want. Id recommend just overwriting your old file
+#(save it as the same name as before) so you dont have a crammed directory.
 def student_csv_output():
     if studentFile is not None:
         outputfile = fd.asksaveasfile(mode='w', defaultextension=".csv")
