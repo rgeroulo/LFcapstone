@@ -459,19 +459,26 @@ def team_irregularity():
     #this dictionary will contain the project IDs and the count of how many students are in each
     #project
     if (studentFileOpenCount != 0 and projectFileOpenCount != 0):
-        dict = {}
-        for obj in studentlist[1:]:
-            #if the projectID is already in the dictionary, increase its count
-            if obj.projectID in dict.keys():
-                dict[obj.projectID] = dict[obj.projectID] + 1
-            #otherwise, initialize the count
+        count = {}
+        major = {}
+        for student in studentlist[1:]:
+            #If the projectID is already in the dictionary, increase its count to see how many
+            #total student are on the project team. Also add the major of the student as well for 
+            #comparision lower in the code
+            if student.projectID in count.keys():
+                count[student.projectID] = count[student.projectID] + 1
+                major[student.projectID].append(student.major.lower())
+            #Otherwise, initialize the count. When we initialize, we will also keep track of and initialize what
+            #major the student being added is as well
             else:
-                dict[obj.projectID] = 1
+                count[student.projectID] = 1
+                major[student.projectID] = []
+                major[student.projectID].append(student.major.lower())
 
         #open a new window for the irregularities
         newWindow2 = Toplevel(root)
         newWindow2.title("Irregularities")
-        newWindow2.geometry("400x400")
+        newWindow2.geometry("800x400")
         #Split the new irregularities window into two frames, the left side will display the team
         #sizes and the right side will display teams that do not utilize all of the desired majors
         irrFrameLeft = Frame(newWindow2, width = 450)
@@ -484,54 +491,66 @@ def team_irregularity():
         #project ID and will calculate the min and max team size
         maxSize = 0
         minSize = 20
-        for key in dict:
-            tmp = Label(irrFrameLeft, text= "Project ID " + str(key) + ": " + str(dict[key]) + " members")
+        for key in count:
+            tmp = Label(irrFrameLeft, text= "Project ID " + str(key) + ": " + str(count[key]) + " members")
             tmp.pack(pady=10)
-            if maxSize < dict[key]:
-                maxSize = dict[key]
-            if minSize > dict[key]:
-                minSize = dict[key]
+            if maxSize < count[key]:
+                maxSize = count[key]
+            if minSize > count[key]:
+                minSize = count[key]
         #Displays the min and max team sizes
-        minTeam = Label(irrFrameLeft, text= "Min team size is " + str(minSize) + " on Project ID " + min(dict, key = dict.get))
+        minTeam = Label(irrFrameLeft, text= "Min team size is " + str(minSize) + " on Project ID " + min(count, key = count.get))
         minTeam.pack(pady=10)
-        maxTeam = Label(irrFrameLeft, text= "Max team size is " + str(maxSize) + " on Project ID " + max(dict, key = dict.get))
+        maxTeam = Label(irrFrameLeft, text= "Max team size is " + str(maxSize) + " on Project ID " + max(count, key = count.get))
         maxTeam.pack(pady=10)
 
-        #Check to make sure the projects are utilizing all of the desired majors
+        #Check to make sure the projects are utilizing all of the desired majors.
+        #This loop will check to see what majors are needed for each project and
+        #append them to a dictionary "needed". This will then be compared with the 
+        #"majors" dictionary above to see if all the needed majors are the same as the 
+        #current majors on the team
+        needed = {}
         for obj in projectlist[1:]:
-            for projID in dict:
-                used = []
-                #we found the project
-                if obj.projID != NULL:
-                    if obj.bme != 0:
-                        used.append("bme")
-                    if obj.cmpen != 0:
-                        used.append("cmpem")
-                    if obj.cmpsc != 0:
-                        used.append("cmpsc")
-                    if obj.ds != 0:
-                        used.append("ds")
-                    if obj.ed != 0:
-                        used.append("ed")
-                    if obj.ee != 0:
-                        used.append("ee")
-                    if obj.egee != 0:
-                        used.append("egee")
-                    if obj.esc != 0:
-                        used.append("esc")
-                    if obj.ie != 0:
-                        used.append("ie")
-                    if obj.matse != 0:
-                        used.append("matse")
-                    if obj.me != 0:
-                        used.append("me")
-                    
-                    
+            for projID in count:
+                #We found a project that is being used so append the requireed majors to the dictionary "needed"
+                if obj.projectID == projID:
+                    needed[projID] = []
+                    if obj.bme != "0":
+                        needed[projID].append("bme")
+                    if obj.cmpen != "0":
+                        needed[projID].append("cmpen")
+                    if obj.cmpsc != "0":
+                        needed[projID].append("cmpsc")
+                    if obj.ds != "0":
+                        needed[projID].append("ds")
+                    if obj.ed != "0":
+                        needed[projID].append("ed")
+                    if obj.ee != "0":
+                        needed[projID].append("ee")
+                    if obj.egee != "0":
+                        needed[projID].append("egee")
+                    if obj.esc != "0":
+                        needed[projID].append("esc")
+                    if obj.ie != "0":
+                        needed[projID].append("ie")
+                    if obj.matse != "0":
+                        needed[projID].append("matse")
+                    if obj.me != "0":
+                        needed[projID].append("me")
+        #Compare the "needed" and "majors" dictionaries to see if there are any disprecancies between
+        #what the project requires for majors and what majors the current students on the team have
+        difference = {}
+        for proj in needed:
+            if proj in major.keys():
+                #Compare the majors for the project
+                difference[proj] = [item for item in needed[proj] if item not in major[proj]]
+            #The major needed was not found in the current list of students on the team so append
+            #This major to the difference list
+        for key, value in difference.items():
+            majorDifference = Label(irrFrameRight, text= "Majors not utilize for project ID " + key + " are " + str(value))
+            majorDifference.pack(pady=10)
 
-
-            #for each project ID, check the projectsfile to see what attributes are used
-            #then check if the students with the same project ID have the major
-
+                
     else:
         messagebox.showerror("Error", "Missing student or project CSV file")
 
