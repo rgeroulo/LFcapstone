@@ -18,9 +18,9 @@ studentFile = None
 projectFile = None
 
 def student_search(event):
-    # Enter a student's name, major, project ID, or student IP in the entry and hit enter. This will filter out other students' names
+    # Enter a student's name, major, project ID, or student IP in the search abar and hit enter. This will filter out other students' names
     # and only show relevant students. These desired students will be in the listbox. To go back to the full
-    #list, hit entet on an empty search box and it will revert back to the start. This serach supports partial
+    #list, hit enter on an empty search box and it will revert back to the start. This serach supports partial
     #name searching as well so you dont have to type the whole name
     global student_filter
     student_filter = []
