@@ -1,17 +1,22 @@
 # importing libraries for GUI, GUI file upload, GUI message pop up
 from tkinter import *
 from tkinter.filedialog import askopenfile
+from tkinter import filedialog as fd
 from tkinter import messagebox
 import pandas as pd
 from IPython.display import display
 from csv import DictReader
 from LFparser import parser
 from LFparser import projectFileParser
+import csv
 
 studentFileOpenCount = 0
 projectFileOpenCount = 0
 _window_counter = 0
 filtered = False
+studentFile = None
+projectFile = None
+
 
 def student_search(event):
     # enter the student's name in the entry and hit enter, filter out other students' names with only relevant students
@@ -359,10 +364,10 @@ def swapStudents(swap_l):
 
 
 # 1) Open another listbox with students to choose from and have the ability to double click and display that students
-# 		attributes.
+#       attributes.
 # 2) Have a confirmation button that when clicked, the swap will be made that will change the two students project IDs
 # 3) As the confirmation button is displayed, show possible project/student disagreements by using the two project's
-# 		attributes
+#       attributes
 
 
 def move_select(event):
@@ -458,27 +463,130 @@ def moveStudent(move_l):
 # 1) Open a listbox that will have project names and the project IDs with the ability to double click
 # 2) Have a confirmation button that when clicked, the student project ID will be updated to the new ID
 # 3) As the confirmation button is displayed, show any possible project/student disagreements by using the project
-# 		attributes
+#       attributes
+
+
 
 
 def team_irregularity():
     # Search through the team file and find teams that are too big, too small, or don't have all of the
     # correct majors assigned for the team by cross checking with the student file.
-    print('hi')
+    #this dictionary will contain the project IDs and the count of how many students are in each
+    #project
+    if (studentFileOpenCount != 0 and projectFileOpenCount != 0):
+        dict = {}
+        for obj in studentlist[1:]:
+            #if the projectID is already in the dictionary, increase its count
+            if obj.projectID in dict.keys():
+                dict[obj.projectID] = dict[obj.projectID] + 1
+            #otherwise, initialize the count
+            else:
+                dict[obj.projectID] = 1
+
+        #open a new window for the irregularities
+        newWindow2 = Toplevel(root)
+        newWindow2.title("Irregularities")
+        newWindow2.geometry("400x400")
+        #Split the new irregularities window into two frames, the left side will display the team
+        #sizes and the right side will display teams that do not utilize all of the desired majors
+        irrFrameLeft = Frame(newWindow2, width = 450)
+        irrFrameLeft.pack(side=LEFT, expand=TRUE, fill=BOTH)
+
+        irrFrameRight = Frame(newWindow2, width = 450)
+        irrFrameRight.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+
+        #This loop will iterate through the dictionary and display the counts for each
+        #project ID and will calculate the min and max team size
+        maxSize = 0
+        minSize = 20
+        for key in dict:
+            tmp = Label(irrFrameLeft, text= "Project ID " + str(key) + ": " + str(dict[key]) + " members")
+            tmp.pack(pady=10)
+            if maxSize < dict[key]:
+                maxSize = dict[key]
+            if minSize > dict[key]:
+                minSize = dict[key]
+        #Displays the min and max team sizes
+        minTeam = Label(irrFrameLeft, text= "Min team size is " + str(minSize) + " on Project ID " + min(dict, key = dict.get))
+        minTeam.pack(pady=10)
+        maxTeam = Label(irrFrameLeft, text= "Max team size is " + str(maxSize) + " on Project ID " + max(dict, key = dict.get))
+        maxTeam.pack(pady=10)
+
+        #Check to make sure the projects are utilizing all of the desired majors
+        for obj in projectlist[1:]:
+            for projID in dict:
+                used = []
+                #we found the project
+                if obj.projID != NULL:
+                    if obj.bme != 0:
+                        used.append("bme")
+                    if obj.cmpen != 0:
+                        used.append("cmpem")
+                    if obj.cmpsc != 0:
+                        used.append("cmpsc")
+                    if obj.ds != 0:
+                        used.append("ds")
+                    if obj.ed != 0:
+                        used.append("ed")
+                    if obj.ee != 0:
+                        used.append("ee")
+                    if obj.egee != 0:
+                        used.append("egee")
+                    if obj.esc != 0:
+                        used.append("esc")
+                    if obj.ie != 0:
+                        used.append("ie")
+                    if obj.matse != 0:
+                        used.append("matse")
+                    if obj.me != 0:
+                        used.append("me")
+                    
+                    
 
 
+            #for each project ID, check the projectsfile to see what attributes are used
+            #then check if the students with the same project ID have the major
+
+    else:
+        messagebox.showerror("Error", "Missing student or project CSV file")
+
+
+
+
+def student_csv_output():
+    if studentFile is not None:
+        outputfile = fd.asksaveasfile(mode='w', defaultextension=".csv")
+        student_writer = csv.writer(outputfile)
+        student_writer.writerow(['Major', 'ProjectID','TimeA' , 'TimeB' , 'TimeC' , 'Comments' , 'Student_NDA' , 'Student_IP' , 'campus_id' , 'last_name' , 'first_name' , 'OnCampus' , 'Var14'])
+        for obj in studentlist[1:]:
+            student_writer.writerow([obj.major, obj.projectID, obj.timeA, obj.timeB, obj.timeC, obj.comments, obj.studentNDA, obj.studentIP, obj.campusID, obj.lastName, obj.firstName, obj.onCampus, obj.var14])
+    else:
+        messagebox.showerror("Error", "Please upload a student csv file first")
+def project_csv_output():
+    if projectFile is not None:
+        outputfile = fd.asksaveasfile(mode='w', defaultextension=".csv")
+        project_writer = csv.writer(outputfile)
+        project_writer.writerow(['ProjectID' , 'CompanyName' , 'ProjectTitle' , 'BME' , 'CMPEN' , 'CMPSC' , 'DS' , 'ED' , 'EE' , 'EGEE' , 'ESC' , 'IE' , 'MATSE' , 'ME' , 'Confidentiality' , 'IP' , 'CourseTime' , 'CourseName' , 'PhysicalPrototype'])
+        for obj in projectlist[1:]:
+            project_writer.writerow([obj.projectID , obj.companyName , obj.projectTitle  , obj.bme , obj.cmpen , obj.cmpsc , obj.ds , obj.ed , obj.ee , obj.egee , obj.esc , obj.ie , obj.matse , obj.me , obj.confidentiality , obj.ip , obj.courseTime , obj.courseName , obj.physicalPrototype])
+    else:
+        messagebox.showerror("Error", "Please upload a project csv file first")
 # All the buttons that are on the homepage in the format Button(root, text, command). Root is used to connect the
 # button to the parents window. Text is used to display text on the button. Command is used to call a function when
 # the button is clicked.
 btn1 = Button(mainFrame, text='Upload Student CSV', command=students_list)
 btn2 = Button(mainFrame, text='Upload Project CSV', command=project_list)
-btn4 = Button(mainFrame, text='Project Irregularity Test', command=project_list)
-btn5 = Button(mainFrame, text='Generate PDF', command=project_list)
+btn4 = Button(mainFrame, text='Project Irregularity Test', command=team_irregularity)
+btn3 = Button(mainFrame, text='Export Student CSV', command=student_csv_output)
+btn5 = Button(mainFrame, text='Export Project CSV', command=project_csv_output)
+#btn5 = Button(mainFrame, text='Generate PDF', command=project_list)
 
 btn1.pack(pady=10)
 btn2.pack(pady=10)
 btn4.pack(pady=10)
+btn3.pack(pady=10)
 btn5.pack(pady=10)
+#btn5.pack(pady=10)
 
 # the main loop that keeps the app running
 mainloop()
