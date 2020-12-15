@@ -127,7 +127,9 @@ def students_list():
 
         # the scrollbar is implemented and filled with content
         scrollbar = Scrollbar(studentFrame)
-        scrollbar.pack(side=RIGHT, expand=TRUE, fill = Y)
+        scrollbar.pack(side=RIGHT, fill = Y)
+        labeling = Label(studentFrame, text="Ordering: FirstName LastName , Major, Project ID")
+        labeling.pack(side=TOP)
         studentlst = Listbox(studentFrame, yscrollcommand=scrollbar.set)
         #studentlst.insert(END, "First Name Last Name , Major , Project ID")
         for obj in studentlist[1:]:
@@ -163,7 +165,9 @@ def project_list():
 
         # the scrollbar is implemented and filled with content
         scrollbar = Scrollbar(projectFrame)
-        scrollbar.pack(side=RIGHT, expand=TRUE, fill=Y)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        labeling = Label(projectFrame, text="Ordering: Project Title , Project ID, Company Name")
+        labeling.pack(side=TOP)
         projlst = Listbox(projectFrame, yscrollcommand=scrollbar.set)
         #The following line will add the titles for each column. If you ever change the
         #attributes being changed, make sure to change these titles as well.
@@ -188,7 +192,7 @@ def student_select(event):
 
     newWindow = Toplevel(root)
     newWindow.title("Student")
-    newWindow.geometry("800x400")
+    newWindow.geometry("400x400")
     Label(newWindow, text="Student window").pack()
     filtered = len(studentSearch.get()) != 0
     if filtered:
@@ -223,7 +227,7 @@ def project_select(event):
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
     newWindow = Toplevel(root)
     newWindow.title("Project")
-    newWindow.geometry("400x600")
+    newWindow.geometry("400x550")
 
     projectPicked = projlst.curselection()
     projectPicked = projectPicked[0]
@@ -261,11 +265,14 @@ def project_select(event):
     courseName = Label(newWindow, text="Course Name: " + projectlist[projectPicked + 1].courseName)
     courseTime = Label(newWindow, text="Course Time: " + projectlist[projectPicked + 1].courseTime)
     physPrototype = Label(newWindow, text="Physical Prototype? " + projectlist[projectPicked + 1].physicalPrototype)
-    usedMajors = Label(newWindow, text="Majors Desired : " + str(needed))
+    desiredMajors = Label(newWindow, text="Majors Desired : " + str(needed))
 
-
+    '''
     btn1 = Button(newWindow, text='Swap teams with another student', command=swapStudents)
     btn2 = Button(newWindow, text='Move to a different team')
+    '''
+    #get the current majors that are needed
+
 
     name.pack(pady=10)
     company.pack(pady=10)
@@ -275,9 +282,11 @@ def project_select(event):
     courseName.pack(pady=10)
     courseTime.pack(pady=10)
     physPrototype.pack(pady=10)
-    usedMajors.pack(pady=10)
+    desiredMajors.pack(pady=10)
+    '''
     btn1.pack(pady=10)
     btn2.pack(pady=10)
+    '''
 
 
 def _delete_window():
@@ -370,7 +379,7 @@ def swapStudents(swap_l):
     studentFileOpenCount += 1
     stu_lst.bind('<Double-1>', swap_select)
 
-    swap_btn = Button(student_change, text='Swap with selected', command=lambda: swap(swap_l))
+    swap_btn = Button(student_change, text='Confirm Swap', command=lambda: swap(swap_l))
     swap_btn.pack(pady=10)
 
 
@@ -386,7 +395,7 @@ def move_select(event):
     # or move to a different project. Once this is completed, create a new CSV file and return to the user
     newWindow = Toplevel(root)
     newWindow.title("Project")
-    newWindow.geometry("800x800")
+    newWindow.geometry("400x400")
 
     projectPicked = proj_lst.curselection()[0]
 
@@ -398,6 +407,7 @@ def move_select(event):
     courseName = Label(newWindow, text="Course Name: " + projectlist[projectPicked + 1].courseName)
     courseTime = Label(newWindow, text="Course Time: " + projectlist[projectPicked + 1].courseTime)
     physPrototype = Label(newWindow, text="Physical Prototype? " + projectlist[projectPicked + 1].physicalPrototype)
+    '''
     bme = Label(newWindow, text="BME : " + projectlist[projectPicked + 1].bme)
     cmpen = Label(newWindow, text="CMPEN : " + projectlist[projectPicked + 1].cmpen)
     cmpsc = Label(newWindow, text="CMPSC : " + projectlist[projectPicked + 1].cmpsc)
@@ -409,6 +419,7 @@ def move_select(event):
     ie = Label(newWindow, text="IE : " + projectlist[projectPicked + 1].ie)
     matse = Label(newWindow, text="MATSE : " + projectlist[projectPicked + 1].matse)
     me = Label(newWindow, text="ME : " + projectlist[projectPicked + 1].me)
+    '''
 
     name.pack(pady=10)
     company.pack(pady=10)
@@ -418,6 +429,7 @@ def move_select(event):
     courseName.pack(pady=10)
     courseTime.pack(pady=10)
     physPrototype.pack(pady=10)
+    '''
     bme.pack(pady=10)
     cmpen.pack(pady=10)
     cmpsc.pack(pady=10)
@@ -429,6 +441,7 @@ def move_select(event):
     ie.pack(pady=10)
     matse.pack(pady=10)
     me.pack(pady=10)
+    '''
 
 
 def move(move_l):
@@ -467,7 +480,7 @@ def moveStudent(move_l):
     projectFileOpenCount += 1
     proj_lst.bind('<Double-1>', move_select)
 
-    move_btn = Button(student_change, text='move to selected', command=lambda: move(move_l))
+    move_btn = Button(student_change, text='Confirm Move', command=lambda: move(move_l))
     move_btn.pack(pady=10)
 
 #########################################################################################################
@@ -569,6 +582,8 @@ def team_irregularity():
             #The major needed was not found in the current list of students on the team so append
             #This major to the difference list
         for key, value in difference.items():
+            if not str(value):
+                allUsed = Label(irrFrameRight, text= "All majors are utilized for project ID " + key)
             majorDifference = Label(irrFrameRight, text= "Majors not utilize for project ID " + key + " are " + str(value))
             majorDifference.pack(pady=10)
 
