@@ -108,7 +108,7 @@ filtered = len(studentSearch.get()) != 0
 
 #students_list will be used to display the students in a listbox in the bottom left corner
 #after the student CSV file is uploaded using the button in the middle of the GUI. This will
-#generate a search bar and a scroll bar as well.
+#generate a scroll bar as well.
 def students_list():
     global studentFile
     global studentFileOpenCount
@@ -305,8 +305,6 @@ def _destroy(event):
 
 
 def swap_select(event):
-    # Create a new window with the student attributes and 2 buttons to swap projects with another student
-    # or move to a different project.
     newWindow = Toplevel(root)
     newWindow.title("Student")
     newWindow.geometry("400x400")
@@ -339,11 +337,24 @@ def swap(swap_l):
     if pass_name:
         studentPicked += 1
     swap_l.append((stu_lst.selection_get(), studentPicked))
-    studentlist[swap_l[0][1] + 1].projectID, studentlist[swap_l[1][1] + 1].projectID = \
-        studentlist[swap_l[1][1] + 1].projectID, studentlist[swap_l[0][1] + 1].projectID
-    projid.config(text="Project ID : " + studentlist[swap_l[0][1] + 1].projectID)
+    student_info_one = swap_l[0][0].split(',')
+    student_name_one = student_info_one[0].split()
+    student_info_two = swap_l[1][0].split(',')
+    student_name_two = student_info_two[0].split()
+    for studentone in studentlist:
+        if (studentone.firstName == student_name_one[0] and studentone.lastName == student_name_one[1]):
+            break;
+    for studenttwo in studentlist:
+        if (studenttwo.firstName == student_name_two[0] and studenttwo.lastName == student_name_two[1]):
+            break;
+    swap_id = studentone.projectID
+    swap_id_two = studenttwo.projectID
+    studentone.projectID = studenttwo.projectID
+    studenttwo.projectID = swap_id
+    projid.config(text="Project ID : " + swap_id_two)
 
-
+#This is the window that will open when you have selected a student and then have hit the "swap" 
+#button to choose another student to swap with.
 def swapStudents(swap_l):
     global _window_counter, studentFileOpenCount, stu_lst, pass_name, passed_index
     if _window_counter == 0:
@@ -356,11 +367,17 @@ def swapStudents(swap_l):
 
     student_change.protocol("WM_DELETE_WINDOW", _delete_window)
     student_change.bind("<Destroy>", _destroy)
-    student_change.title("Swapping Student")
+    student_change.title("Swapping Two Students")
     student_change.geometry("400x400")
 
+    '''
+    searchBar = Entry(student_change)
+    searchBar.bind('<Return>', student_search)
+    searchBar.pack(side=TOP)
+    '''
+
     scrollbar = Scrollbar(student_change)
-    scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+    scrollbar.pack(side=RIGHT, fill=Y)
     stu_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
 
     pass_name = False
@@ -379,8 +396,8 @@ def swapStudents(swap_l):
     studentFileOpenCount += 1
     stu_lst.bind('<Double-1>', swap_select)
 
-    swap_btn = Button(student_change, text='Confirm Swap', command=lambda: swap(swap_l))
-    swap_btn.pack(pady=10)
+    confirmBtn = Button(student_change, text='Confirm Swap', command=lambda: swap(swap_l))
+    confirmBtn.pack(pady=10)
 
 
 # 1) Open another listbox with students to choose from and have the ability to double click and display that students
@@ -446,8 +463,13 @@ def move_select(event):
 
 def move(move_l):
     projectPicked = proj_lst.curselection()[0]
-    studentlist[move_l[0][1] + 1].projectID = projectlist[projectPicked + 1].projectID
-    projid.config(text="Project ID : " + studentlist[move_l[0][1] + 1].projectID)
+    student_info = move_l[0][0].split(',')
+    student_name = student_info[0].split()
+    for student in studentlist:
+        if (student.firstName == student_name[0] and student.lastName == student_name[1]):
+            student.projectID = projectlist[projectPicked + 1].projectID
+            break;
+    projid.config(text="Project ID : " + projectlist[projectPicked + 1].projectID)
 
 
 def moveStudent(move_l):
@@ -607,6 +629,7 @@ def student_csv_output():
             student_writer.writerow([obj.major, obj.projectID, obj.timeA, obj.timeB, obj.timeC, obj.comments, obj.studentNDA, obj.studentIP, obj.campusID, obj.lastName, obj.firstName, obj.onCampus, obj.var14])
     else:
         messagebox.showerror("Error", "Please upload a student csv file first")
+'''
 def project_csv_output():
     if projectFile is not None:
         outputfile = fd.asksaveasfile(mode='w', defaultextension=".csv")
@@ -616,6 +639,7 @@ def project_csv_output():
             project_writer.writerow([obj.projectID , obj.companyName , obj.projectTitle  , obj.bme , obj.cmpen , obj.cmpsc , obj.ds , obj.ed , obj.ee , obj.egee , obj.esc , obj.ie , obj.matse , obj.me , obj.confidentiality , obj.ip , obj.courseTime , obj.courseName , obj.physicalPrototype])
     else:
         messagebox.showerror("Error", "Please upload a project csv file first")
+'''
 
 
 
@@ -626,13 +650,13 @@ btn1 = Button(mainFrame, text='Upload Student CSV', command=students_list)
 btn2 = Button(mainFrame, text='Upload Project CSV', command=project_list)
 btn4 = Button(mainFrame, text='Project Irregularity Test', command=team_irregularity)
 btn3 = Button(mainFrame, text='Export Student CSV', command=student_csv_output)
-btn5 = Button(mainFrame, text='Export Project CSV', command=project_csv_output)
+#btn5 = Button(mainFrame, text='Export Project CSV', command=project_csv_output)
 
 btn1.pack(pady=10)
 btn2.pack(pady=10)
 btn4.pack(pady=10)
 btn3.pack(pady=10)
-btn5.pack(pady=10)
+#btn5.pack(pady=10)
 
 # the main loop that keeps the app running
 mainloop()
