@@ -327,11 +327,9 @@ def swap_select(event):
 
 def swap(swap_l):
     studentPicked = stu_lst.curselection()[0]
-    print(swap_l)
     if pass_name:
         studentPicked += 1
     swap_l.append((stu_lst.selection_get(), studentPicked))
-    print(swap_l)
     student_info_one = swap_l[0][0].split(',')
     student_name_one = student_info_one[0].split()
     student_info_two = swap_l[1][0].split(',')
@@ -347,7 +345,10 @@ def swap(swap_l):
     studentone.projectID = studenttwo.projectID
     studenttwo.projectID = swap_id
     projid.config(text="Project ID : " + swap_id_two)
-
+    studentlst.delete(0, END)
+    for obj in studentlist[1:]:
+        studentlst.insert(END, obj.firstName + " " + obj.lastName + ", " + obj.major + ", " + obj.projectID)
+    _delete_window()
 
 def swapStudents(swap_l):
     global _window_counter, studentFileOpenCount, stu_lst, pass_name, passed_index
@@ -454,7 +455,10 @@ def move(move_l):
             student.projectID = projectlist[projectPicked + 1].projectID
             break;
     projid.config(text="Project ID : " + projectlist[projectPicked + 1].projectID)
-
+    studentlst.delete(0, END)
+    for obj in studentlist[1:]:
+        studentlst.insert(END, obj.firstName + " " + obj.lastName + ", " + obj.major + ", " + obj.projectID)
+    _delete_window()
 
 def moveStudent(move_l):
     global _window_counter, projectFileOpenCount, proj_lst
