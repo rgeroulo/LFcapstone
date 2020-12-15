@@ -352,6 +352,10 @@ def swap(swap_l):
     studentone.projectID = studenttwo.projectID
     studenttwo.projectID = swap_id
     projid.config(text="Project ID : " + swap_id_two)
+    studentlst.delete(0, END)
+    for obj in studentlist[1:]:
+        studentlst.insert(END, obj.firstName + " " + obj.lastName + " , " + obj.major + " , " + obj.projectID)
+    _delete_window()
 
 #This is the window that will open when you have selected a student and then have hit the "swap" 
 #button to choose another student to swap with.
@@ -470,6 +474,10 @@ def move(move_l):
             student.projectID = projectlist[projectPicked + 1].projectID
             break;
     projid.config(text="Project ID : " + projectlist[projectPicked + 1].projectID)
+    studentlst.delete(0, END)
+    for obj in studentlist[1:]:
+        studentlst.insert(END, obj.firstName + " " + obj.lastName + " , " + obj.major + " , " + obj.projectID)
+    _delete_window()
 
 
 def moveStudent(move_l):
