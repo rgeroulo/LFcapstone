@@ -72,7 +72,7 @@ mainFrame = Frame(root)
 mainFrame.pack(side=TOP)
 mainFrameLabel = Label(mainFrame, text="Learning Factory Dashboard", font=("Courier", 35))
 mainFrameLabel.pack()
-subTitle = Label(mainFrame, text="Please upload the proper CSV files to start", font=("Courier", 20))
+subTitle = Label(mainFrame, text="Please upload both CSV files to start", font=("Courier", 20))
 subTitle.pack()
 
 #################################################  STUDENT FRAME  #################################################
@@ -542,7 +542,7 @@ def team_irregularity():
 
         #open a new window for the irregularities
         newWindow2 = Toplevel(root)
-        newWindow2.title("Irregularities")
+        newWindow2.title("Irregularity Test")
         newWindow2.geometry("1200x600")
         #Split the new irregularities window into two frames, the left side will display the team
         #sizes and the right side will display teams that do not utilize all of the desired majors
@@ -559,7 +559,7 @@ def team_irregularity():
         irrFrameRight.pack(side=RIGHT, expand=TRUE, fill=BOTH)
 
         #Label for the left most frame which has the team sizes
-        sizeLabel = Label(irrFrameLeft, text= "TEAM SIZE")
+        sizeLabel = Label(irrFrameLeft, text= "TEAM SIZE", font=(15))
         sizeLabel.pack(pady=10)
 
         #This loop will iterate through the dictionary and display the counts for each
@@ -655,13 +655,13 @@ def team_irregularity():
 
 
 
-        stillNeededLabel = Label(irrFrameMid, text= "MAJORS STILL REQUIRED")
+        stillNeededLabel = Label(irrFrameMid, text= "MAJORS STILL REQUIRED", font=(15))
         stillNeededLabel.pack(pady=10)
 
-        nonNeededExtraLabel = Label(irrFrameMid2, text = "EXTRA NON-REQUIRED MAJORS")
+        nonNeededExtraLabel = Label(irrFrameMid2, text = "EXTRA NON-REQUIRED MAJORS", font=(15))
         nonNeededExtraLabel.pack(pady=10)
 
-        neededExtraLabel = Label(irrFrameRight, text = "EXTRA REQUIRED MAJORS")
+        neededExtraLabel = Label(irrFrameRight, text = "EXTRA REQUIRED MAJORS", font=(15) )
         neededExtraLabel.pack(pady=10)
         
         for key, value in stillNeeded.items():
@@ -704,14 +704,13 @@ def student_csv_output():
 # the button is clicked.
 btn1 = Button(mainFrame, text='Upload Student CSV', command=students_list)
 btn2 = Button(mainFrame, text='Upload Project CSV', command=project_list)
-btn4 = Button(mainFrame, text='Project Irregularity Test', command=team_irregularity)
-btn3 = Button(mainFrame, text='Export Student CSV', command=student_csv_output)
+btn4 = Button(mainFrame, text='Team Irregularity Test', command=team_irregularity)
+btn3 = Button(mainFrame, text='Save Student CSV', command=student_csv_output, bg = 'yellow')
 
 btn1.pack(pady=10)
 btn2.pack(pady=10)
 btn4.pack(pady=10)
 btn3.pack(pady=10)
-#btn5.pack(pady=10)
 
 # the main loop that keeps the app running
 mainloop()
