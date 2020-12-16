@@ -47,7 +47,8 @@ def swap_search(event):
     # and only show relevant students. These desired students will be in the listbox. To go back to the full
     #list, hit enter on an empty search box and it will revert back to the start. This serach supports partial
     #name searching as well so you dont have to type the whole name
-    global student_filter
+
+    global swap_filter
     swap_filter = []
     filter = event.widget.get().lower()
     cursor = 0
@@ -259,8 +260,13 @@ def project_select(event):
     newWindow.title("Project")
     newWindow.geometry("400x550")
 
-    projectPicked = projlst.curselection()
-    projectPicked = projectPicked[0]
+    #projectPicked = projlst.curselection()
+    #projectPicked = projectPicked[0]
+    filtered = len(projectSearch.get()) != 0
+    if filtered:
+        projectPicked = project_filter[projlst.curselection()[0]][1]
+    else:
+        projectPicked = projlst.curselection()[0]
     #Check to see what majors are required for the chosen project, they will be stored in "needed"
     needed = []
     if projectlist[projectPicked + 1].bme != "0":
@@ -337,6 +343,13 @@ def swap_select(event):
     Label(newWindow, text="Student window").pack()
 
     studentPicked = stu_lst.curselection()[0]
+
+    filtered = len(searchBar.get()) != 0
+    if filtered:
+        studentPicked = swap_filter[stu_lst.curselection()[0]][1]
+    else:
+        studentPicked = stu_lst.curselection()[0]
+
     if pass_name and passed_index <= stu_lst.curselection()[0]:
         studentPicked += 1
     name = Label(newWindow,
@@ -386,7 +399,7 @@ def swap(swap_l):
 #This is the window that will open when you have selected a student and then have hit the "swap" 
 #button to choose another student to swap with.
 def swapStudents(swap_l):
-    global _window_counter, studentFileOpenCount, stu_lst, pass_name, passed_index
+    global _window_counter, studentFileOpenCount, stu_lst, pass_name, passed_index, searchBar
     if _window_counter == 0:
         global student_change
         student_change = Toplevel(root)
