@@ -496,7 +496,7 @@ def moveStudent(move_l):
     student_change.title("Moving Student")
 
     scrollbar = Scrollbar(student_change)
-    scrollbar.pack(side=RIGHT, expand=TRUE, fill=BOTH)
+    scrollbar.pack(side=RIGHT, fill=Y)
     proj_lst = Listbox(student_change, yscrollcommand=scrollbar.set)
 
     #Following line is the title for the listbox. If you change any attributes that are to be displayed.
@@ -543,17 +543,28 @@ def team_irregularity():
         #open a new window for the irregularities
         newWindow2 = Toplevel(root)
         newWindow2.title("Irregularities")
-        newWindow2.geometry("800x400")
+        newWindow2.geometry("1200x600")
         #Split the new irregularities window into two frames, the left side will display the team
         #sizes and the right side will display teams that do not utilize all of the desired majors
         irrFrameLeft = Frame(newWindow2, width = 450)
         irrFrameLeft.pack(side=LEFT, expand=TRUE, fill=BOTH)
 
+        irrFrameMid = Frame(newWindow2, width = 450)
+        irrFrameMid.pack(side=LEFT, expand=TRUE, fill=BOTH)
+
+        irrFrameMid2 = Frame(newWindow2, width = 450)
+        irrFrameMid2.pack(side=LEFT, expand=TRUE, fill=BOTH)
+
         irrFrameRight = Frame(newWindow2, width = 450)
         irrFrameRight.pack(side=RIGHT, expand=TRUE, fill=BOTH)
 
+        #Label for the left most frame which has the team sizes
+        sizeLabel = Label(irrFrameLeft, text= "TEAM SIZE")
+        sizeLabel.pack(pady=10)
+
         #This loop will iterate through the dictionary and display the counts for each
         #project ID and will calculate the min and max team size
+
         maxSize = 0
         minSize = 20
         for key in count:
@@ -603,19 +614,67 @@ def team_irregularity():
                     if obj.me != "0":
                         needed[projID].append("me")
         #Compare the "needed" and "majors" dictionaries to see if there are any disprecancies between
-        #what the project requires for majors and what majors the current students on the team have
-        difference = {}
+        #what the project requires for majors and what majors the current students on the team have.
+        #We will then display the majors that are needed but not on the team yet.
+        stillNeeded = {}
         for proj in needed:
             if proj in major.keys():
                 #Compare the majors for the project
-                difference[proj] = [item for item in needed[proj] if item not in major[proj]]
-            #The major needed was not found in the current list of students on the team so append
-            #This major to the difference list
-        for key, value in difference.items():
-            if not str(value):
-                allUsed = Label(irrFrameRight, text= "All majors are utilized for project ID " + key)
-            majorDifference = Label(irrFrameRight, text= "Majors not utilize for project ID " + key + " are " + str(value))
-            majorDifference.pack(pady=10)
+                stillNeeded[proj] = [item for item in needed[proj] if item not in major[proj]]
+                
+        #Check to see if there are nonrequired majors on the same project ID, if so, this can be useful
+        #for changing teams for you will know there are dispensable students on a team
+        extraNonNeeded = {}
+        for proj in major:
+            #If the projects majors are not in the needed majors dictionary, then add them to extraNonNeeded
+            extraNonNeeded[proj] = list(set(major[proj]) - set(needed[proj]))
+
+        #Check to see if there are multiple required majors on the same project ID, if so, this can be useful
+        #for changing teams for you will know there are dispensable students on a team
+        extraNeededMajors = {}
+        tmp = {}
+        for proj in needed:
+            total = {}
+            #Iterate through the needed majors for each project. Check to see how many occurances there
+            #are of the needed item in the current team. Add this number to total. This can help to show that there are
+            #multiple majors on a team that can be divided to other teams if needed.
+            for item in needed[proj]:
+                total[item] = major[proj].count(item)
+            #Add the counts of each major to the tmp dictioanry. tmp is a dictionary of dictionarys that holds the
+            #key = projectID value = a dictionary of majors to total total
+            tmp[proj] = total
+        
+        for proj, value in tmp.items():
+            extraNeededMajors[proj] = []
+            for key in value:
+                #If there are more than 1 required major for the class, display that info
+                if value[key] > 1:
+                    extraNeededMajors[proj].append(key)
+
+
+
+
+
+        stillNeededLabel = Label(irrFrameMid, text= "MAJORS STILL REQUIRED")
+        stillNeededLabel.pack(pady=10)
+
+        nonNeededExtraLabel = Label(irrFrameMid2, text = "EXTRA NON-REQUIRED MAJORS")
+        nonNeededExtraLabel.pack(pady=10)
+
+        neededExtraLabel = Label(irrFrameRight, text = "EXTRA REQUIRED MAJORS")
+        neededExtraLabel.pack(pady=10)
+        
+        for key, value in stillNeeded.items():
+            majorStillNeeded = Label(irrFrameMid, text= "Project ID " + key + " does not have a " + str(value))
+            majorStillNeeded.pack(pady=10)
+
+        for key, value in extraNonNeeded.items():
+            majorNonNeeded = Label(irrFrameMid2, text= "Project ID " + key + " does not need the " + str(value))
+            majorNonNeeded.pack(pady=10)
+
+        for key, value in extraNeededMajors.items():
+            majorExtra = Label(irrFrameRight, text= "Project ID " + key + " has extra required " + str(value))
+            majorExtra.pack(pady=10)
 
                 
     else:
@@ -637,17 +696,6 @@ def student_csv_output():
             student_writer.writerow([obj.major, obj.projectID, obj.timeA, obj.timeB, obj.timeC, obj.comments, obj.studentNDA, obj.studentIP, obj.campusID, obj.lastName, obj.firstName, obj.onCampus, obj.var14])
     else:
         messagebox.showerror("Error", "Please upload a student csv file first")
-'''
-def project_csv_output():
-    if projectFile is not None:
-        outputfile = fd.asksaveasfile(mode='w', defaultextension=".csv")
-        project_writer = csv.writer(outputfile, lineterminator = '\n')
-        project_writer.writerow(['ProjectID' , 'CompanyName' , 'ProjectTitle' , 'BME' , 'CMPEN' , 'CMPSC' , 'DS' , 'ED' , 'EE' , 'EGEE' , 'ESC' , 'IE' , 'MATSE' , 'ME' , 'Confidentiality' , 'IP' , 'CourseTime' , 'CourseName' , 'PhysicalPrototype'])
-        for obj in projectlist[1:]:
-            project_writer.writerow([obj.projectID , obj.companyName , obj.projectTitle  , obj.bme , obj.cmpen , obj.cmpsc , obj.ds , obj.ed , obj.ee , obj.egee , obj.esc , obj.ie , obj.matse , obj.me , obj.confidentiality , obj.ip , obj.courseTime , obj.courseName , obj.physicalPrototype])
-    else:
-        messagebox.showerror("Error", "Please upload a project csv file first")
-'''
 
 
 
@@ -658,7 +706,6 @@ btn1 = Button(mainFrame, text='Upload Student CSV', command=students_list)
 btn2 = Button(mainFrame, text='Upload Project CSV', command=project_list)
 btn4 = Button(mainFrame, text='Project Irregularity Test', command=team_irregularity)
 btn3 = Button(mainFrame, text='Export Student CSV', command=student_csv_output)
-#btn5 = Button(mainFrame, text='Export Project CSV', command=project_csv_output)
 
 btn1.pack(pady=10)
 btn2.pack(pady=10)
